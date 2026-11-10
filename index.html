@@ -10,14 +10,682 @@
     <meta property="og:description" content="Aplikasi pencatatan stok sisa fisik harian dengan pengiriman laporan cepat ke WhatsApp." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2325d366'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310b981'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style id="standalone-fallback-styles">
+      :root {
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        --spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+      }
+      * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      html, body {
+        margin: 0;
+        background: #f4f6fb;
+        color: #0f172a;
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        min-height: 100dvh;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+      .sf-standalone { padding-bottom: 104px; min-height: 100dvh; }
+      .sf-wrap { max-width: 672px; margin: 0 auto; padding: 0 14px; }
+      .sf-header {
+        position: sticky; top: 0; z-index: 30;
+        background: rgba(255,255,255,0.92);
+        -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(226,232,240,0.9);
+        padding: 10px 0;
+      }
+      .sf-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .sf-title-box { display: flex; align-items: center; gap: 8px; }
+      .sf-title { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
+      .sf-badge { font-size: 12px; font-weight: 700; color: #64748b; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
+      .sf-badge.bump { transform: scale(1.22); color: #059669; }
+      .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 500; color: #94a3b8; }
+      .sf-actions { display: flex; align-items: center; gap: 8px; }
+      .sf-btn {
+        border: 0; outline: 0; font: inherit; cursor: pointer;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        border-radius: 12px; font-weight: 800; font-size: 13px;
+        transition: transform 0.2s var(--spring), background 0.2s, box-shadow 0.2s;
+      }
+      .sf-btn:active { transform: scale(0.93); }
+      .sf-btn-reset {
+        height: 36px; padding: 0 12px; background: #fff; color: #475569;
+        border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      }
+      .sf-btn-edit {
+        height: 36px; padding: 0 16px; background: #0f172a; color: #fff;
+        box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+      }
+      .sf-btn-edit.active {
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        box-shadow: 0 4px 14px rgba(37,99,235,0.28);
+      }
+      .sf-prog { margin-top: 8px; height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+      .sf-prog-bar {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #10b981, #14b8a6, #34d399);
+        border-radius: 99px;
+        transition: width 0.45s var(--ease);
+      }
+      /* Normal list */
+      .sf-normal-card {
+        margin-top: 12px; background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+      }
+      .sf-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 6px 12px; border-bottom: 1px solid #f1f5f9;
+        transition: background 0.2s;
+      }
+      .sf-row:last-child { border-bottom: 0; }
+      .sf-row.filled { background: rgba(236,253,245,0.45); }
+      .sf-row-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+      .sf-num { width: 20px; font-size: 12px; font-weight: 700; color: #94a3b8; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+      .sf-row.filled .sf-num { color: #059669; }
+      .sf-name-txt { font-size: 14px; font-weight: 700; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sf-row.filled .sf-name-txt { color: #0f172a; }
+      .sf-chk {
+        width: 16px; height: 16px; border-radius: 50%; background: #10b981; color: #fff;
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        transform: scale(0); transition: transform 0.35s var(--spring);
+      }
+      .sf-row.filled .sf-chk { transform: scale(1); }
+      .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
+      .sf-plus-sep { font-size: 12px; font-weight: 800; color: #cbd5e1; }
+      .sf-input-box {
+        display: inline-flex; align-items: center; height: 32px; padding: 0 10px;
+        border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
+        transition: all 0.15s;
+      }
+      .sf-input-box:focus-within {
+        background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
+      }
+      .sf-input-box.has-val {
+        background: #fff; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.14);
+      }
+      .sf-val-inp {
+        width: 46px; border: 0; outline: 0; background: transparent;
+        text-align: right; font: inherit; font-size: 14px; font-weight: 800; color: #0f172a;
+        font-variant-numeric: tabular-nums;
+      }
+      .sf-val-inp::placeholder { color: #cbd5e1; }
+      .sf-unit-lbl { margin-left: 6px; font-size: 12px; font-weight: 700; color: #94a3b8; user-select: none; }
+      /* Edit Mode */
+      .sf-edit-banner {
+        margin: 12px 0; padding: 14px; border-radius: 16px;
+        background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        box-shadow: 0 6px 20px rgba(37,99,235,0.18);
+      }
+      .sf-edit-list { display: flex; flex-direction: column; gap: 10px; }
+      .sf-edit-card {
+        position: relative; background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 16px; padding: 12px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+        transition: translate 0.38s var(--spring), scale 0.28s var(--spring), box-shadow 0.28s var(--ease), border-color 0.2s;
+        will-change: translate, scale;
+      }
+      .sf-edit-card.is-holding { scale: 0.985; border-color: #93c5fd; background: #f8faff; }
+      .sf-edit-card.is-dragging {
+        z-index: 40 !important; scale: 1.03; border-color: #3b82f6 !important; background: #fff !important;
+        box-shadow: 0 24px 48px -12px rgba(15,23,42,0.22), 0 0 0 3px rgba(59,130,246,0.2) !important;
+        transition: scale 0.28s var(--spring), box-shadow 0.28s var(--ease) !important;
+      }
+      .sf-edit-card.is-dropping {
+        z-index: 35 !important;
+        transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
+      }
+      .sf-no-anim .sf-edit-card { transition: none !important; }
+      .sf-edit-top { display: flex; align-items: center; gap: 10px; }
+      .sf-grip {
+        height: 40px; padding: 0 10px; border-radius: 12px;
+        background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
+        display: inline-flex; align-items: center; gap: 4px;
+        cursor: grab; user-select: none; touch-action: none; flex-shrink: 0;
+        font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+      }
+      .sf-grip:active { cursor: grabbing; background: #2563eb; color: #fff; border-color: #2563eb; }
+      .sf-name-inp {
+        flex: 1; min-width: 0; height: 40px; padding: 0 12px;
+        border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
+        font: inherit; font-size: 14px; font-weight: 800; color: #0f172a; outline: 0;
+      }
+      .sf-name-inp:focus { background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14); }
+      .sf-del-btn {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48;
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
+      }
+      .sf-edit-units {
+        margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9;
+        display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+      }
+      .sf-unit-chip {
+        display: inline-flex; align-items: center; height: 30px;
+        border-radius: 12px; background: #f1f5f9; border: 1px solid #e2e8f0; overflow: hidden;
+      }
+      .sf-unit-chip-btn {
+        border: 0; background: transparent; height: 100%; padding: 0 10px;
+        font: inherit; font-size: 12px; font-weight: 800; color: #1e293b; cursor: pointer;
+      }
+      .sf-unit-chip-rm {
+        border: 0; border-left: 1px solid #e2e8f0; background: transparent;
+        height: 100%; padding: 0 6px; color: #64748b; cursor: pointer; font-weight: 800;
+      }
+      .sf-unit-chip-rm:hover { background: #ffe4e6; color: #e11d48; }
+      .sf-add-unit-btn {
+        height: 30px; padding: 0 12px; border-radius: 12px;
+        background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb;
+        font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+      }
+      /* Dock */
+      .sf-dock {
+        position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+        background: rgba(255,255,255,0.95); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+        border-top: 1px solid #e2e8f0; padding: 10px 14px;
+      }
+      .sf-dock-inner { max-width: 672px; margin: 0 auto; display: flex; align-items: center; gap: 8px; }
+      .sf-btn-wa {
+        flex: 1; height: 44px; border-radius: 14px;
+        background: linear-gradient(135deg, #059669, #0d9488); color: #fff;
+        font-size: 14px; box-shadow: 0 4px 14px rgba(5,150,105,0.25);
+      }
+      .sf-btn-sec {
+        height: 44px; padding: 0 14px; border-radius: 14px;
+        background: #f8fafc; border: 1px solid #e2e8f0; color: #334155; font-size: 13px;
+      }
+      /* Modal */
+      .sf-modal-backdrop {
+        position: fixed; inset: 0; z-index: 60;
+        background: rgba(15,23,42,0.45); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+        display: flex; align-items: center; justify-content: center; padding: 16px;
+        animation: sfFadeIn 0.18s ease;
+      }
+      .sf-modal-card {
+        background: #fff; border: 1px solid #e2e8f0; border-radius: 24px;
+        width: 100%; max-width: 380px; padding: 20px;
+        box-shadow: 0 24px 48px rgba(15,23,42,0.2);
+        animation: sfPopIn 0.28s var(--spring);
+      }
+      @keyframes sfFadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes sfPopIn { from { opacity: 0; transform: scale(0.88) translateY(16px); } to { opacity: 1; transform: none; } }
+      .sf-unit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+      .sf-unit-pick {
+        height: 48px; border-radius: 16px; border: 2px solid #dbeafe;
+        background: #eff6ff; color: #1d4ed8; font: inherit; font-size: 14px; font-weight: 800;
+        cursor: pointer; transition: transform 0.15s var(--spring), background 0.15s, color 0.15s;
+      }
+      .sf-unit-pick:hover, .sf-unit-pick:active { background: #2563eb; border-color: #2563eb; color: #fff; transform: scale(0.96); }
+      .sf-toast {
+        position: fixed; bottom: 74px; left: 50%; transform: translateX(-50%); z-index: 70;
+        background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 14px;
+        font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.__initStandaloneApp = function () {
+        if (window.__VITE_ACTIVE__ || window.__STANDALONE_MOUNTED__) return;
+        window.__STANDALONE_MOUNTED__ = true;
+
+        var LS_KEY = 'sisa-fisik:v1';
+        var PRIMARY_UNITS = ['pack', 'pcs', 'porsi', 'kg', 'gram'];
+        var EXTRA_UNITS = ['btl', 'lembar', 'liter', 'ml', 'dus', 'box', 'sachet', 'ikat'];
+        var uid = function () { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); };
+        var mk = function (name) {
+          var units = Array.prototype.slice.call(arguments, 1);
+          return { id: uid(), name: name, slots: units.map(function (u) { return { v: '', u: u }; }) };
+        };
+        var getDefaults = function () {
+          return [
+            mk('Karage', 'pack'), mk('Sayap', 'pack', 'porsi'), mk('Ayam filet', 'porsi'),
+            mk('Ayam kecil', 'pack', 'porsi'), mk('Ayam besar', 'pack', 'porsi'), mk('Ebi', 'pcs'),
+            mk('Timun', ''), mk('Crabstik', ''), mk('Koslow', ''), mk('Selada', ''),
+            mk('Saos Black paper', ''), mk('Saos teriyaki', ''), mk('Saos Asam manis', 'btl', ''),
+            mk('Saos pedas', ''), mk('Cuka', ''), mk('Kwipie', 'pack', ''), mk('Mestro', ''),
+            mk('Mentai', ''), mk('Wijen', ''), mk('Minyak', ''), mk('Tobiko', ''),
+            mk('Ricepaper', 'lembar'), mk('Mika', 'pcs'), mk('Cup(35)', 'pcs'),
+            mk('Sambal horeg', '', ''), mk('Nasi', 'kg', 'kg', 'kg'), mk('Nori', 'pack', 'lembar'),
+            mk('Klip besar', 'pack', 'pcs'), mk('Klip sedang', 'pack', 'pcs'),
+            mk('Klip kecil', 'pcs'), mk('Tepung wfc', 'pack')
+          ];
+        };
+        var todayKey = function () {
+          var d = new Date();
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        };
+        var fullDate = function () {
+          return new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        };
+        var isFilled = function (it) {
+          return it.slots.some(function (s) { return s.v.trim() !== ''; });
+        };
+
+        var items = getDefaults();
+        try {
+          var raw = localStorage.getItem(LS_KEY);
+          if (raw) {
+            var p = JSON.parse(raw);
+            if (p && Array.isArray(p.items)) {
+              items = p.items.map(function (i) {
+                return {
+                  id: String(i.id || uid()),
+                  name: String(i.name || 'Barang'),
+                  slots: (Array.isArray(i.slots) && i.slots.length ? i.slots : [{ v: '', u: '' }]).map(function (s) {
+                    return { v: String((s && s.v) || ''), u: String((s && s.u) || '') };
+                  })
+                };
+              });
+              if (p.day && p.day !== todayKey()) {
+                items.forEach(function (it) { it.slots.forEach(function (s) { s.v = ''; }); });
+              }
+            }
+          }
+        } catch (e) {}
+
+        var save = function () {
+          try { localStorage.setItem(LS_KEY, JSON.stringify({ items: items, theme: 'light', day: todayKey() })); } catch (e) {}
+        };
+
+        var isEdit = false;
+        var root = document.getElementById('root');
+
+        var buildReport = function () {
+          var head = '*Sisa Fisik* – ' + fullDate();
+          var lines = items.map(function (it) {
+            var parts = it.slots.filter(function (s) { return s.v.trim() !== ''; }).map(function (s) {
+              return s.v.trim() + (s.u.trim() ? ' ' + s.u.trim() : '');
+            });
+            return (it.name.trim() || 'Barang') + ' ' + (parts.length ? parts.join(' + ') : '-');
+          });
+          return head + '\n\n' + lines.join('\n');
+        };
+
+        var showToast = function (msg, undoFn) {
+          var old = document.querySelector('.sf-toast');
+          if (old) old.remove();
+          var t = document.createElement('div');
+          t.className = 'sf-toast';
+          t.innerHTML = '<span>' + msg + '</span>';
+          if (undoFn) {
+            var b = document.createElement('button');
+            b.style.cssText = 'border:0;background:none;color:#60a5fa;font-weight:800;cursor:pointer;text-decoration:underline';
+            b.textContent = 'Urungkan';
+            b.onclick = function () { undoFn(); t.remove(); render(); };
+            t.appendChild(b);
+          }
+          document.body.appendChild(t);
+          setTimeout(function () { if (t.parentNode) t.remove(); }, undoFn ? 4500 : 2400);
+        };
+
+        var openUnitPopup = function (item, mode, slotIndex) {
+          var bd = document.createElement('div');
+          bd.className = 'sf-modal-backdrop';
+          var card = document.createElement('div');
+          card.className = 'sf-modal-card';
+          card.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:center">' +
+            '<div><h3 style="margin:0;font-size:16px;font-weight:800">' + (mode === 'add' ? 'Pilih Satuan Kolom Baru' : 'Ganti Satuan') + '</h3>' +
+            '<p style="margin:2px 0 0;font-size:12px;color:#64748b">Barang: <b style="color:#0f172a">' + item.name + '</b></p></div>' +
+            '<button class="sf-close" style="border:0;background:#f1f5f9;width:32px;height:32px;border-radius:10px;cursor:pointer;font-weight:800">✕</button></div>' +
+            '<div class="sf-unit-grid"></div>' +
+            '<div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;margin-bottom:6px">Satuan Lainnya</div>' +
+            '<div class="sf-extra-units" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>';
+          var grid = card.querySelector('.sf-unit-grid');
+          var pick = function (u) {
+            if (mode === 'add') item.slots.push({ v: '', u: u });
+            else item.slots[slotIndex].u = u;
+            save(); bd.remove(); render();
+          };
+          PRIMARY_UNITS.forEach(function (u) {
+            var b = document.createElement('button');
+            b.className = 'sf-unit-pick';
+            b.textContent = u;
+            b.onclick = function () { pick(u); };
+            grid.appendChild(b);
+          });
+          var noneBtn = document.createElement('button');
+          noneBtn.className = 'sf-unit-pick';
+          noneBtn.style.cssText = 'background:#f1f5f9;border-color:#e2e8f0;color:#475569;font-size:12px';
+          noneBtn.textContent = 'Tanpa Satuan';
+          noneBtn.onclick = function () { pick(''); };
+          grid.appendChild(noneBtn);
+
+          var extraBox = card.querySelector('.sf-extra-units');
+          EXTRA_UNITS.forEach(function (u) {
+            var b = document.createElement('button');
+            b.style.cssText = 'padding:6px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;font:inherit;font-size:12px;font-weight:700;cursor:pointer';
+            b.textContent = u;
+            b.onclick = function () { pick(u); };
+            extraBox.appendChild(b);
+          });
+
+          card.querySelector('.sf-close').onclick = function () { bd.remove(); };
+          bd.onclick = function (e) { if (e.target === bd) bd.remove(); };
+          bd.appendChild(card);
+          document.body.appendChild(bd);
+        };
+
+        var openAddItemModal = function () {
+          var bd = document.createElement('div');
+          bd.className = 'sf-modal-backdrop';
+          var selectedUnit = 'pack';
+          var card = document.createElement('div');
+          card.className = 'sf-modal-card';
+          card.innerHTML =
+            '<h3 style="margin:0 0 12px;font-size:16px;font-weight:800">Tambah Barang Baru</h3>' +
+            '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px">Nama Barang</label>' +
+            '<input id="sf-new-name" type="text" placeholder="Contoh: Saos Tomat" style="width:100%;height:40px;padding:0 12px;border-radius:12px;border:1px solid #cbd5e1;font:inherit;font-size:14px;font-weight:700;margin-bottom:12px">' +
+            '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">Pilih Satuan Awal</label>' +
+            '<div class="sf-u-choices" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>' +
+            '<div style="display:flex;gap:8px">' +
+            '<button type="button" class="sf-cancel" style="flex:1;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#f1f5f9;font:inherit;font-weight:700;cursor:pointer">Batal</button>' +
+            '<button type="button" class="sf-save" style="flex:1;height:40px;border-radius:12px;border:0;background:#2563eb;color:#fff;font:inherit;font-weight:800;cursor:pointer">Simpan</button></div>';
+          var uBox = card.querySelector('.sf-u-choices');
+          var renderChoices = function () {
+            uBox.innerHTML = '';
+            PRIMARY_UNITS.concat(['']).forEach(function (u) {
+              var b = document.createElement('button');
+              b.type = 'button';
+              var act = selectedUnit === u;
+              b.style.cssText = 'padding:6px 12px;border-radius:10px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid ' + (act ? '#2563eb' : '#e2e8f0') + ';background:' + (act ? '#2563eb' : '#fff') + ';color:' + (act ? '#fff' : '#334155');
+              b.textContent = u || 'Tanpa Satuan';
+              b.onclick = function () { selectedUnit = u; renderChoices(); };
+              uBox.appendChild(b);
+            });
+          };
+          renderChoices();
+          card.querySelector('.sf-cancel').onclick = function () { bd.remove(); };
+          card.querySelector('.sf-save').onclick = function () {
+            var inp = card.querySelector('#sf-new-name');
+            var name = inp.value.trim();
+            if (!name) { inp.focus(); return; }
+            items.push({ id: uid(), name: name, slots: [{ v: '', u: selectedUnit }] });
+            save(); bd.remove(); render();
+            showToast('"' + name + '" ditambahkan');
+          };
+          bd.onclick = function (e) { if (e.target === bd) bd.remove(); };
+          bd.appendChild(card);
+          document.body.appendChild(bd);
+          setTimeout(function () { card.querySelector('#sf-new-name').focus(); }, 60);
+        };
+
+        var updateHeaderStats = function () {
+          var done = items.filter(isFilled).length;
+          var tot = items.length;
+          var badge = document.getElementById('sf-stat-badge');
+          var bar = document.getElementById('sf-prog-bar');
+          var waCount = document.getElementById('sf-wa-count');
+          if (badge) {
+            badge.textContent = done + '/' + tot + ' terisi';
+            badge.classList.remove('bump');
+            void badge.offsetWidth;
+            badge.classList.add('bump');
+          }
+          if (bar) bar.style.width = (tot ? Math.round((done / tot) * 100) : 0) + '%';
+          if (waCount) waCount.textContent = done + '/' + tot;
+        };
+
+        var render = function () {
+          var done = items.filter(isFilled).length;
+          var tot = items.length;
+          var pct = tot ? Math.round((done / tot) * 100) : 0;
+
+          root.innerHTML =
+            '<div class="sf-standalone">' +
+            '<header class="sf-header"><div class="sf-wrap">' +
+            '<div class="sf-head-row">' +
+            '<div><div class="sf-title-box"><h1 class="sf-title">Sisa Fisik</h1>' +
+            '<span class="sf-badge" id="sf-stat-badge">' + done + '/' + tot + ' terisi</span></div>' +
+            '<p class="sf-date">' + fullDate() + '</p></div>' +
+            '<div class="sf-actions">' +
+            (!isEdit ? '<button class="sf-btn sf-btn-reset" id="sf-reset-btn">Reset</button>' : '') +
+            '<button class="sf-btn sf-btn-edit ' + (isEdit ? 'active' : '') + '" id="sf-edit-btn">' + (isEdit ? '✓ Selesai Edit' : '✎ Edit') + '</button>' +
+            '</div></div>' +
+            '<div class="sf-prog"><div class="sf-prog-bar" id="sf-prog-bar" style="width:' + pct + '%"></div></div>' +
+            '</div></header>' +
+            '<main class="sf-wrap" id="sf-main"></main>' +
+            '<div class="sf-dock"><div class="sf-dock-inner" id="sf-dock-inner"></div></div>' +
+            '</div>';
+
+          document.getElementById('sf-edit-btn').onclick = function () {
+            isEdit = !isEdit;
+            render();
+          };
+          var resetBtn = document.getElementById('sf-reset-btn');
+          if (resetBtn) {
+            resetBtn.onclick = function () {
+              if (!items.some(isFilled)) { showToast('Semua angka sudah kosong'); return; }
+              items.forEach(function (it) { it.slots.forEach(function (s) { s.v = ''; }); });
+              save(); render(); showToast('Semua angka dikosongkan');
+            };
+          }
+
+          var main = document.getElementById('sf-main');
+          if (!isEdit) {
+            var card = document.createElement('div');
+            card.className = 'sf-normal-card';
+            items.forEach(function (item, idx) {
+              var row = document.createElement('div');
+              row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
+              row.innerHTML =
+                '<div class="sf-row-left">' +
+                '<span class="sf-num">' + (idx + 1) + '.</span>' +
+                '<span class="sf-name-txt"></span>' +
+                '<span class="sf-chk">✓</span></div>' +
+                '<div class="sf-slots"></div>';
+              row.querySelector('.sf-name-txt').textContent = item.name;
+              var slotsBox = row.querySelector('.sf-slots');
+              item.slots.forEach(function (slot, sIdx) {
+                if (sIdx > 0) {
+                  var sep = document.createElement('span');
+                  sep.className = 'sf-plus-sep';
+                  sep.textContent = '+';
+                  slotsBox.appendChild(sep);
+                }
+                var lbl = document.createElement('label');
+                lbl.className = 'sf-input-box' + (slot.v.trim() !== '' ? ' has-val' : '');
+                var inp = document.createElement('input');
+                inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = '0';
+                inp.className = 'sf-val-inp'; inp.value = slot.v;
+                inp.oninput = function () {
+                  slot.v = inp.value;
+                  lbl.classList.toggle('has-val', slot.v.trim() !== '');
+                  row.classList.toggle('filled', isFilled(item));
+                  save(); updateHeaderStats();
+                };
+                inp.onkeydown = function (e) {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    var all = Array.prototype.slice.call(card.querySelectorAll('.sf-val-inp'));
+                    var next = all[all.indexOf(inp) + 1];
+                    if (next) { next.focus(); next.select(); } else inp.blur();
+                  }
+                };
+                lbl.appendChild(inp);
+                if (slot.u.trim() !== '') {
+                  var uSpan = document.createElement('span');
+                  uSpan.className = 'sf-unit-lbl';
+                  uSpan.textContent = slot.u;
+                  lbl.appendChild(uSpan);
+                }
+                slotsBox.appendChild(lbl);
+              });
+              card.appendChild(row);
+            });
+            main.appendChild(card);
+          } else {
+            var banner = document.createElement('div');
+            banner.className = 'sf-edit-banner';
+            banner.innerHTML =
+              '<div style="font-size:12px;line-height:1.4"><b>Mode Pengaturan Barang:</b><br>Tahan & geser tombol nomor di kiri untuk ubah urutan, atau klik <b>+ Tambah Satuan</b>.</div>' +
+              '<button class="sf-btn" id="sf-top-add" style="height:36px;padding:0 12px;background:#fff;color:#2563eb;flex-shrink:0">+ Barang Baru</button>';
+            main.appendChild(banner);
+            banner.querySelector('#sf-top-add').onclick = openAddItemModal;
+
+            var listEl = document.createElement('div');
+            listEl.className = 'sf-edit-list';
+            items.forEach(function (item, idx) {
+              var ec = document.createElement('div');
+              ec.className = 'sf-edit-card';
+              ec.innerHTML =
+                '<div class="sf-edit-top">' +
+                '<div class="sf-grip" title="Tahan & geser"><span>⠿</span><span>' + (idx + 1) + '</span></div>' +
+                '<input class="sf-name-inp" type="text">' +
+                '<button class="sf-del-btn" title="Hapus">🗑</button></div>' +
+                '<div class="sf-edit-units"></div>';
+              var nameInp = ec.querySelector('.sf-name-inp');
+              nameInp.value = item.name;
+              nameInp.oninput = function () { item.name = nameInp.value; save(); };
+              ec.querySelector('.sf-del-btn').onclick = function () {
+                var removed = items.splice(idx, 1)[0];
+                save(); render();
+                showToast('"' + removed.name + '" dihapus', function () { items.splice(idx, 0, removed); save(); });
+              };
+              var uRow = ec.querySelector('.sf-edit-units');
+              item.slots.forEach(function (slot, sIdx) {
+                var chip = document.createElement('div');
+                chip.className = 'sf-unit-chip';
+                var cBtn = document.createElement('button');
+                cBtn.className = 'sf-unit-chip-btn';
+                cBtn.textContent = '#' + (sIdx + 1) + ' ' + (slot.u.trim() || 'Tanpa satuan');
+                cBtn.onclick = function () { openUnitPopup(item, 'edit', sIdx); };
+                chip.appendChild(cBtn);
+                if (item.slots.length > 1) {
+                  var rm = document.createElement('button');
+                  rm.className = 'sf-unit-chip-rm';
+                  rm.textContent = '✕';
+                  rm.onclick = function () { item.slots.splice(sIdx, 1); save(); render(); };
+                  chip.appendChild(rm);
+                }
+                uRow.appendChild(chip);
+              });
+              var addU = document.createElement('button');
+              addU.className = 'sf-add-unit-btn';
+              addU.textContent = '+ Tambah Satuan';
+              addU.onclick = function () { openUnitPopup(item, 'add'); };
+              uRow.appendChild(addU);
+
+              // Hold-to-drag on grip
+              var grip = ec.querySelector('.sf-grip');
+              grip.onpointerdown = function (e) {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                var startY = e.clientY;
+                var pid = e.pointerId;
+                ec.classList.add('is-holding');
+                var holdT = setTimeout(function () {
+                  var els = Array.prototype.slice.call(listEl.children);
+                  var from = els.indexOf(ec);
+                  var sy = window.scrollY;
+                  var rects = els.map(function (c) { return c.getBoundingClientRect(); });
+                  var tops = rects.map(function (r) { return r.top + sy; });
+                  var hs = rects.map(function (r) { return r.height; });
+                  var gap = els.length > 1 ? rects[1].top - rects[0].bottom : 10;
+                  var target = from;
+                  ec.classList.remove('is-holding');
+                  ec.classList.add('is-dragging');
+                  try { grip.setPointerCapture(pid); } catch (_) {}
+
+                  var onMove = function (ev) {
+                    ev.preventDefault();
+                    var rawDy = (ev.clientY - startY) + (window.scrollY - sy);
+                    var last = els.length - 1;
+                    var dy = Math.max(tops[0] - tops[from], Math.min((tops[last] + hs[last]) - (tops[from] + hs[from]), rawDy));
+                    ec.style.translate = '0 ' + dy + 'px';
+                    var center = tops[from] + hs[from] / 2 + dy;
+                    var nt = from;
+                    for (var j = from + 1; j < els.length; j++) if (center > tops[j] + hs[j] / 2) nt = j;
+                    for (var k = from - 1; k >= 0; k--) if (center < tops[k] + hs[k] / 2) nt = k;
+                    if (nt !== target) {
+                      target = nt;
+                      var shift = hs[from] + gap;
+                      els.forEach(function (c, m) {
+                        if (m === from) return;
+                        var off = 0;
+                        if (target > from && m > from && m <= target) off = -shift;
+                        else if (target < from && m >= target && m < from) off = shift;
+                        c.style.translate = off ? '0 ' + off + 'px' : '';
+                      });
+                    }
+                  };
+                  var onEnd = function () {
+                    grip.removeEventListener('pointermove', onMove);
+                    grip.removeEventListener('pointerup', onEnd);
+                    grip.removeEventListener('pointercancel', onEnd);
+                    ec.classList.remove('is-dragging');
+                    ec.classList.add('is-dropping');
+                    var finalY = target > from ? tops[target] + hs[target] - hs[from] - tops[from] : target < from ? tops[target] - tops[from] : 0;
+                    ec.style.translate = '0 ' + finalY + 'px';
+                    setTimeout(function () {
+                      if (target !== from) {
+                        var moved = items.splice(from, 1)[0];
+                        items.splice(target, 0, moved);
+                        save();
+                      }
+                      render();
+                    }, 320);
+                  };
+                  grip.addEventListener('pointermove', onMove);
+                  grip.addEventListener('pointerup', onEnd);
+                  grip.addEventListener('pointercancel', onEnd);
+                }, 150);
+                var cancelHold = function () {
+                  clearTimeout(holdT);
+                  ec.classList.remove('is-holding');
+                  grip.removeEventListener('pointerup', cancelHold);
+                  grip.removeEventListener('pointercancel', cancelHold);
+                };
+                grip.addEventListener('pointerup', cancelHold);
+                grip.addEventListener('pointercancel', cancelHold);
+              };
+
+              listEl.appendChild(ec);
+            });
+            main.appendChild(listEl);
+          }
+
+          var dock = document.getElementById('sf-dock-inner');
+          if (isEdit) {
+            dock.innerHTML =
+              '<button class="sf-btn" id="sf-dock-add" style="flex:1;height:44px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px">+ Tambah Barang Baru</button>' +
+              '<button class="sf-btn" id="sf-dock-done" style="height:44px;padding:0 20px;border-radius:14px;background:#0f172a;color:#fff;font-size:14px">✓ Selesai</button>';
+            document.getElementById('sf-dock-add').onclick = openAddItemModal;
+            document.getElementById('sf-dock-done').onclick = function () { isEdit = false; render(); };
+          } else {
+            dock.innerHTML =
+              '<button class="sf-btn sf-btn-sec" id="sf-copy-btn">Salin</button>' +
+              '<button class="sf-btn sf-btn-wa" id="sf-wa-btn"><span>Kirim ke WhatsApp</span><span id="sf-wa-count" style="font-size:12px;background:rgba(0,0,0,0.16);padding:2px 8px;border-radius:8px">' + done + '/' + tot + '</span></button>';
+            document.getElementById('sf-copy-btn').onclick = function () {
+              try { navigator.clipboard.writeText(buildReport()); showToast('Teks laporan berhasil disalin!'); } catch (e) {}
+            };
+            document.getElementById('sf-wa-btn').onclick = function () {
+              var msg = buildReport();
+              try { navigator.clipboard.writeText(msg); } catch (e) {}
+              window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+            };
+          }
+        };
+
+        render();
+      };
+    </script>
+    <script
+      type="module"
+      src="./src/main.tsx"
+      onerror="window.__initStandaloneApp && window.__initStandaloneApp()"
+    ></script>
+    <script>
+      setTimeout(function () {
+        if (!window.__VITE_ACTIVE__ && window.__initStandaloneApp) {
+          window.__initStandaloneApp();
+        }
+      }, 300);
+    </script>
   </body>
 </html>
-
