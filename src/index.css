@@ -27,43 +27,8 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Blue Checkmark Stroke + Pop Animation */
-@keyframes blueCheckPop {
-  0% {
-    transform: scale(0.3) rotate(-25deg);
-    opacity: 0;
-  }
-  65% {
-    transform: scale(1.2) rotate(4deg);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-    opacity: 1;
-  }
-}
-
-@keyframes blueCheckDraw {
-  from {
-    stroke-dashoffset: 24;
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-.blue-check-badge {
-  animation: blueCheckPop 0.42s var(--spring) forwards;
-}
-
-.blue-check-path {
-  stroke-dasharray: 24;
-  stroke-dashoffset: 24;
-  animation: blueCheckDraw 0.32s 0.1s var(--ease-out) forwards;
-}
-
-/* 120fps Zero-Delay Drag & Drop Engine */
-.edit-item-card {
+/* 120fps Zero-Delay Drag & Drop Engine for List Rows */
+.list-row-item {
   position: relative;
   transition:
     translate 0.38s var(--spring),
@@ -74,35 +39,33 @@
   will-change: translate, scale;
 }
 
-.edit-item-card.is-holding {
+.list-row-item.is-holding {
   scale: 0.985;
-  border-color: #93c5fd;
-  background-color: #f8faff;
+  background-color: #eff6ff !important;
 }
 
-.edit-item-card.is-dragging {
-  z-index: 40 !important;
-  scale: 1.03;
-  border-color: #3b82f6 !important;
+.list-row-item.is-dragging {
+  z-index: 45 !important;
+  scale: 1.025;
   background-color: #ffffff !important;
+  border-radius: 16px !important;
   box-shadow:
-    0 24px 48px -12px rgba(15, 23, 42, 0.22),
-    0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+    0 24px 48px -12px rgba(15, 23, 42, 0.24),
+    0 0 0 2px #2563eb !important;
   transition:
     scale 0.28s var(--spring),
-    box-shadow 0.28s var(--ease-out),
-    border-color 0.2s ease !important;
+    box-shadow 0.28s var(--ease-out) !important;
 }
 
-.edit-item-card.is-dropping {
-  z-index: 35 !important;
+.list-row-item.is-dropping {
+  z-index: 40 !important;
   transition:
     translate 0.34s var(--spring),
     scale 0.28s var(--ease-out),
     box-shadow 0.28s var(--ease-out) !important;
 }
 
-.no-drag-anim .edit-item-card {
+.no-drag-anim .list-row-item {
   transition: none !important;
 }
 
@@ -110,14 +73,4 @@ body.dragging-active {
   user-select: none !important;
   -webkit-user-select: none !important;
   cursor: grabbing !important;
-}
-
-@keyframes subtleWiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-3deg); }
-  75% { transform: rotate(3deg); }
-}
-
-.grip-wiggle {
-  animation: subtleWiggle 0.45s ease-in-out 2;
 }

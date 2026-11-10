@@ -19,6 +19,7 @@ import {
   Eye,
   Calendar,
   Layers,
+  MoreVertical,
 } from 'lucide-react';
 
 interface Slot {
@@ -147,7 +148,9 @@ export default function App() {
     }
   });
 
-  const [isEditMode, setIsEditMode] = useState(false);
+  // Per-Item 3-dots menu & Per-Item Edit state
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
 
   // Unit Picker Popup State
   const [unitPopup, setUnitPopup] = useState<{
@@ -187,7 +190,7 @@ export default function App() {
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   // Direct DOM 120fps Drag & Drop Refs
-  const editListRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const settlingRef = useRef(false);
   const dragRef = useRef<{
@@ -216,6 +219,14 @@ export default function App() {
     );
   };
 
+  // Close 3-dots menu when clicking outside
+  useEffect(() => {
+    if (!openMenuId) return;
+    const handleOutsideClick = () => setOpenMenuId(null);
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, [openMenuId]);
+
   // Persist to localStorage
   useEffect(() => {
     try {
@@ -236,7 +247,7 @@ export default function App() {
   const filledCount = useMemo(() => items.filter(isItemFilled).length, [items]);
   const progressPercent = totalCount > 0 ? Math.round((filledCount / totalCount) * 100) : 0;
 
-  // Normal Mode: Fill values
+  // Fill values
   const handleValueChange = (itemId: string, slotIndex: number, val: string) => {
     setItems((prev) =>
       prev.map((it) => {
@@ -265,7 +276,7 @@ export default function App() {
     }
   };
 
-  // Edit Mode: Item Name & Slots (Max 2 slots)
+  // Edit Item Name & Slots (Max 2 slots)
   const handleNameChange = (itemId: string, name: string) => {
     setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, name } : it)));
   };
@@ -314,6 +325,7 @@ export default function App() {
   };
 
   const handleDeleteItem = (item: Item, index: number) => {
+    if (editingItemId === item.id) setEditingItemId(null);
     setItems((prev) => prev.filter((it) => it.id !== item.id));
     showToast(`"${item.name}" dihapus`, () => {
       setItems((prev) => {
@@ -351,7 +363,7 @@ export default function App() {
   };
 
   /* ============================================================================
-   * 120FPS ZERO-DELAY HOLD & DRAG ENGINE
+   * 120FPS ZERO-DELAY HOLD & DRAG ENGINE (Works directly on the edited item!)
    * ============================================================================ */
   const updateDragPosition = () => {
     const d = dragRef.current;
@@ -417,8 +429,8 @@ export default function App() {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
 
     const grip = e.currentTarget;
-    const cardEl = grip.closest('.edit-item-card') as HTMLElement | null;
-    const listEl = editListRef.current;
+    const cardEl = grip.closest('.list-row-item') as HTMLElement | null;
+    const listEl = listRef.current;
     if (!cardEl || !listEl) return;
 
     const startY = e.clientY;
@@ -437,7 +449,7 @@ export default function App() {
 
       const sy = window.scrollY;
       const rects = els.map((c) => c.getBoundingClientRect());
-      let gap = 10;
+      let gap = 0;
       if (els.length > 1) {
         gap = rects[1].top - rects[0].bottom;
       }
@@ -486,7 +498,7 @@ export default function App() {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
     }
-    const listEl = editListRef.current;
+    const listEl = listRef.current;
     if (listEl) {
       listEl.querySelectorAll('.is-holding').forEach((el) => el.classList.remove('is-holding'));
     }
@@ -544,7 +556,7 @@ export default function App() {
     }, 340);
   };
 
-  // Clear all values: ALWAYS shows confirmation pop-up ("Apakah anda yakin hapus data angka yang terisi?")
+  // Clear all values: ALWAYS shows confirmation pop-up
   const handleClearValues = () => {
     setConfirmDialog({
       title: 'Apakah anda yakin hapus data angka yang terisi?',
@@ -671,31 +683,33 @@ export default function App() {
               </p>
             </div>
 
-            {/* Right Controls: Generous gap-3.5 between Reset & Edit to prevent misclicks */}
-            {!isEditMode && (
-              <div className="flex items-center gap-3.5 shrink-0">
-                <motion.button
-                  whileTap={{ scale: 0.92 }}
-                  type="button"
-                  onClick={handleClearValues}
-                  title="Kosongkan angka"
-                  className="h-9 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset</span>
-                </motion.button>
+            {/* Right Controls: Reset & Tambah Barang */}
+            <div className="flex items-center gap-3 shrink-0">
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                type="button"
+                onClick={handleClearValues}
+                title="Kosongkan angka"
+                className="h-9 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset</span>
+              </motion.button>
 
-                <motion.button
-                  whileTap={{ scale: 0.92 }}
-                  type="button"
-                  onClick={() => setIsEditMode(true)}
-                  className="h-9 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer whitespace-nowrap"
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                  <span>Edit</span>
-                </motion.button>
-              </div>
-            )}
+              <motion.button
+                whileTap={{ scale: 0.92 }}
+                type="button"
+                onClick={() => {
+                  setNewName('');
+                  setNewUnits(['Pack']);
+                  setShowAddModal(true);
+                }}
+                className="h-9 px-3.5 rounded-xl text-xs font-extrabold flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all cursor-pointer whitespace-nowrap"
+              >
+                <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
+                <span>Barang</span>
+              </motion.button>
+            </div>
           </div>
 
           {/* Animated Progress Bar */}
@@ -718,7 +732,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white border border-slate-200 rounded-2xl p-8 text-center my-4 shadow-2xs"
           >
-            <p className="text-sm font-bold text-slate-800 mb-1">Daftar barang masih kosong</p>
+            <p className="text-base font-bold text-slate-800 mb-1">Daftar barang masih kosong</p>
             <p className="text-xs text-slate-500 mb-4">
               Klik tombol di bawah untuk mulai menambahkan barang stok.
             </p>
@@ -726,7 +740,8 @@ export default function App() {
               whileTap={{ scale: 0.95 }}
               type="button"
               onClick={() => {
-                setIsEditMode(true);
+                setNewName('');
+                setNewUnits(['Pack']);
                 setShowAddModal(true);
               }}
               className="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-sm"
@@ -735,314 +750,315 @@ export default function App() {
               <span>Tambah Barang Sekarang</span>
             </motion.button>
           </motion.div>
-        ) : !isEditMode ? (
-          /* ==================== MODE NORMAL: ULTRA-COMPACT CHECKLIST ==================== */
-          <motion.div
-            key="normal-list"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22 }}
-            className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-xs"
+        ) : (
+          <div
+            ref={listRef}
+            className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 shadow-xs"
           >
             {items.map((item, index) => {
               const filled = isItemFilled(item);
               const isHighlighted = highlightedId === item.id;
+              const isEditingThis = editingItemId === item.id;
+              const isMenuOpen = openMenuId === item.id;
 
-              return (
-                <div
-                  key={item.id}
-                  id={`item-row-${item.id}`}
-                  className={`relative flex items-center justify-between gap-2 px-3 py-2 transition-colors duration-200 ${
-                    isHighlighted
-                      ? 'bg-blue-50'
-                      : filled
-                      ? 'bg-blue-50/35'
-                      : 'hover:bg-slate-50/70'
-                  }`}
-                >
-                  {/* Left: Number / Animated Blue Checkmark + Item Name */}
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    {filled ? (
-                      <span
-                        key="checked"
-                        className="blue-check-badge w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs shadow-blue-500/30"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-3.5 h-3.5 fill-none stroke-current stroke-[3.2]"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path className="blue-check-path" d="M5 12.5l4.5 4.5L19 7.5" />
-                        </svg>
-                      </span>
-                    ) : (
-                      <span
-                        key="unchecked"
-                        className="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0"
-                      >
-                        {index + 1}
-                      </span>
-                    )}
-
-                    <span
-                      className={`text-sm font-bold truncate transition-colors ${
-                        filled ? 'text-slate-900' : 'text-slate-800'
-                      }`}
-                    >
-                      {item.name}
-                    </span>
-                  </div>
-
-                  {/* Right: Compact Quantity Inputs (Number centered in column, Unit at far right) */}
-                  <div className="flex flex-wrap items-center justify-end gap-1.5 shrink-0">
-                    {item.slots.map((slot, sIdx) => {
-                      const hasVal = slot.v.trim() !== '';
-                      return (
-                        <React.Fragment key={sIdx}>
-                          {sIdx > 0 && (
-                            <span className="text-xs font-extrabold text-slate-400">+</span>
-                          )}
-                          <label
-                            className={`inline-flex items-center h-9 w-28 sm:w-32 rounded-xl border pl-2 pr-1.5 transition-all duration-150 ${
-                              hasVal
-                                ? 'bg-white border-blue-500 ring-2 ring-blue-500/15 shadow-2xs'
-                                : 'bg-slate-50 border-slate-200 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
-                            }`}
-                          >
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              enterKeyHint="next"
-                              data-slot-val="true"
-                              value={slot.v}
-                              onChange={(e) =>
-                                handleValueChange(item.id, sIdx, e.target.value)
-                              }
-                              onKeyDown={handleValueKeyDown}
-                              placeholder="0"
-                              aria-label={`${item.name} kolom ${sIdx + 1}`}
-                              className="flex-1 min-w-0 w-full text-center text-sm font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
-                            />
-                            {slot.u.trim() !== '' && (
-                              <span className="ml-1 px-1.5 py-0.5 rounded-md bg-slate-200/85 text-[11px] font-extrabold text-slate-800 select-none whitespace-nowrap shrink-0">
-                                {slot.u}
-                              </span>
-                            )}
-                          </label>
-                        </React.Fragment>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </motion.div>
-        ) : (
-          /* ==================== MODE EDIT: FLOATING CARDS (No Note Banner) ==================== */
-          <motion.div
-            key="edit-list"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.2 }}
-          >
-            <div ref={editListRef} className="flex flex-col gap-2.5">
-              {items.map((item, index) => {
-                const isHighlighted = highlightedId === item.id;
-
+              /* ==================== SINGLE ITEM EDIT VIEW ==================== */
+              if (isEditingThis) {
                 return (
                   <div
                     key={item.id}
                     id={`item-row-${item.id}`}
-                    className={`edit-item-card group rounded-2xl bg-white border p-3 shadow-xs ${
-                      isHighlighted
-                        ? 'border-blue-400 ring-2 ring-blue-400/20'
-                        : 'border-slate-200/90'
-                    }`}
+                    className="list-row-item bg-blue-50/50 p-3.5 ring-2 ring-blue-500/80 rounded-xl z-20"
                   >
-                    {/* Top Row: Hold-to-Drag Handle + Seamless Name Input + Delete Button */}
-                    <div className="flex items-center gap-2.5">
+                    {/* Top Row: Hold-to-Drag Handle + Editable Name + Delete + Selesai */}
+                    <div className="flex items-center gap-2">
                       <div
                         onPointerDown={handleGripPointerDown}
                         onPointerMove={handleGripPointerMove}
                         onPointerUp={finishDrag}
                         onPointerCancel={finishDrag}
                         onContextMenu={(e) => e.preventDefault()}
-                        title="Tahan sebentar lalu geser ke atas/bawah"
-                        className="grip-wiggle h-10 px-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 active:bg-blue-600 active:text-white border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0"
+                        title="Tahan sebentar lalu geser ke atas/bawah untuk ubah urutan"
+                        className="h-10 px-2.5 rounded-xl bg-white hover:bg-blue-50 active:bg-blue-600 active:text-white border-2 border-blue-200 text-slate-800 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0 shadow-2xs"
                       >
-                        <GripVertical className="w-4 h-4 opacity-75" />
-                        <span className="text-xs font-extrabold tabular-nums min-w-[18px] text-center">
+                        <GripVertical className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-extrabold tabular-nums min-w-[18px] text-center">
                           {index + 1}
                         </span>
                       </div>
 
-                      <div className="relative flex-1 min-w-0">
-                        <input
-                          type="text"
-                          value={item.name}
-                          onChange={(e) => handleNameChange(item.id, e.target.value)}
-                          onBlur={(e) => handleNameBlur(item.id, e.target.value)}
-                          placeholder="Nama barang..."
-                          aria-label="Nama barang"
-                          className="w-full h-10 pl-3 pr-8 rounded-xl bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/15 text-sm font-extrabold text-slate-900 outline-none transition-all"
-                        />
-                        <Pencil className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
-                      </div>
+                      <input
+                        type="text"
+                        autoFocus
+                        value={item.name}
+                        onChange={(e) => handleNameChange(item.id, e.target.value)}
+                        onBlur={(e) => handleNameBlur(item.id, e.target.value)}
+                        placeholder="Nama barang..."
+                        aria-label="Nama barang"
+                        className="flex-1 min-w-0 h-10 px-3 rounded-xl bg-white border-2 border-blue-400 focus:border-blue-600 text-base font-extrabold text-slate-900 outline-none shadow-2xs"
+                      />
 
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.9 }}
+                      <button
                         type="button"
                         onClick={() => handleDeleteItem(item, index)}
                         title="Hapus barang ini"
-                        className="h-10 w-10 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200/70 text-rose-600 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                        className="h-10 w-10 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
-                      </motion.button>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setEditingItemId(null)}
+                        className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                      >
+                        <Check className="w-4 h-4 stroke-[2.75]" />
+                        <span>Selesai</span>
+                      </button>
                     </div>
 
-                    {/* Bottom Row: Interactive Unit Chips (Max 2 columns) */}
-                    <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600">
-                        <Layers className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Satuan:</span>
-                      </span>
+                    {/* Bottom Row: Unit Columns (Max 2) + Hold Hint */}
+                    <div className="mt-3 pt-2.5 border-t border-blue-200/60 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600">
+                          <Layers className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Satuan:</span>
+                        </span>
 
-                      {item.slots.map((slot, sIdx) => (
-                        <motion.div
-                          layout
-                          key={sIdx}
-                          initial={{ scale: 0.85, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="inline-flex items-center h-8 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-300 overflow-hidden transition-colors"
-                        >
+                        {item.slots.map((slot, sIdx) => (
+                          <div
+                            key={sIdx}
+                            className="inline-flex items-center h-8 rounded-xl bg-white border border-slate-300 overflow-hidden shadow-2xs"
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setUnitPopup({
+                                  itemId: item.id,
+                                  itemName: item.name,
+                                  mode: 'edit',
+                                  slotIndex: sIdx,
+                                  currentUnit: slot.u,
+                                })
+                              }
+                              title="Klik untuk ganti satuan"
+                              className="h-full px-3 text-xs font-extrabold text-slate-800 flex items-center gap-1.5 cursor-pointer hover:bg-slate-50"
+                            >
+                              <span className="text-[11px] font-bold text-slate-400 tabular-nums">
+                                #{sIdx + 1}
+                              </span>
+                              <span className="text-blue-700 font-extrabold text-sm">
+                                {slot.u || 'Pilih'}
+                              </span>
+                            </button>
+
+                            {item.slots.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveSlot(item.id, sIdx)}
+                                title="Hapus kolom satuan ini"
+                                className="h-full px-2 hover:bg-rose-100 text-slate-400 hover:text-rose-600 border-l border-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+
+                        {item.slots.length < 2 && (
                           <button
                             type="button"
                             onClick={() =>
                               setUnitPopup({
                                 itemId: item.id,
                                 itemName: item.name,
-                                mode: 'edit',
-                                slotIndex: sIdx,
-                                currentUnit: slot.u,
+                                mode: 'add',
                               })
                             }
-                            title="Klik untuk ganti satuan"
-                            className="h-full px-3 text-xs font-extrabold text-slate-800 flex items-center gap-1.5 cursor-pointer"
+                            className="h-8 px-3 rounded-xl bg-white hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-300 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
                           >
-                            <span className="text-[11px] font-bold text-slate-500 tabular-nums">
-                              Kolom {sIdx + 1}:
-                            </span>
-                            <span className="text-blue-700 font-extrabold">
-                              {slot.u || 'Pilih'}
-                            </span>
+                            <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
+                            <span>Tambah Satuan</span>
                           </button>
+                        )}
+                      </div>
 
-                          {item.slots.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveSlot(item.id, sIdx)}
-                              title="Hapus kolom satuan ini"
-                              className="h-full px-2 hover:bg-rose-100 text-slate-500 hover:text-rose-600 border-l border-slate-300 flex items-center justify-center cursor-pointer transition-colors"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </motion.div>
-                      ))}
-
-                      {item.slots.length < 2 && (
-                        <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.93 }}
-                          type="button"
-                          onClick={() =>
-                            setUnitPopup({
-                              itemId: item.id,
-                              itemName: item.name,
-                              mode: 'add',
-                            })
-                          }
-                          className="h-8 px-3 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
-                        >
-                          <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
-                          <span>Tambah Satuan</span>
-                        </motion.button>
-                      )}
+                      <span className="text-[11px] font-semibold text-blue-700">
+                        Tahan nomor di kiri untuk geser posisi
+                      </span>
                     </div>
                   </div>
                 );
-              })}
-            </div>
-          </motion.div>
+              }
+
+              /* ==================== NORMAL ROW VIEW ==================== */
+              return (
+                <div
+                  key={item.id}
+                  id={`item-row-${item.id}`}
+                  className={`list-row-item flex items-center justify-between gap-2 px-3 py-2.5 transition-colors duration-150 ${
+                    isHighlighted
+                      ? 'bg-blue-50'
+                      : filled
+                      ? 'bg-blue-50/20'
+                      : 'hover:bg-slate-50/70'
+                  }`}
+                >
+                  {/* Left: Number Box (Blue Border & Black Text when filled) + Item Name (+1 size: text-base) */}
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    <span
+                      className={`w-7 h-7 rounded-lg text-sm font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 text-slate-900 ${
+                        filled
+                          ? 'border-2 border-blue-600 bg-white shadow-2xs'
+                          : 'border-2 border-slate-200 bg-slate-50'
+                      }`}
+                    >
+                      {index + 1}
+                    </span>
+                    <span className="text-base font-bold text-slate-900 truncate">
+                      {item.name}
+                    </span>
+                  </div>
+
+                  {/* Right: Quantity Inputs (Number +2 size: text-lg, Unit +2 size: text-sm) + 3-Dots Button */}
+                  <div className="flex items-center justify-end gap-1.5 shrink-0">
+                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                      {item.slots.map((slot, sIdx) => {
+                        const hasVal = slot.v.trim() !== '';
+                        return (
+                          <React.Fragment key={sIdx}>
+                            {sIdx > 0 && (
+                              <span className="text-sm font-extrabold text-slate-400">+</span>
+                            )}
+                            <label
+                              className={`inline-flex items-center h-10 w-31 sm:w-35 rounded-xl border pl-2 pr-1.5 transition-all duration-150 ${
+                                hasVal
+                                  ? 'bg-white border-blue-600 ring-2 ring-blue-500/15 shadow-2xs'
+                                  : 'bg-slate-50 border-slate-200 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
+                              }`}
+                            >
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                enterKeyHint="next"
+                                data-slot-val="true"
+                                value={slot.v}
+                                onChange={(e) =>
+                                  handleValueChange(item.id, sIdx, e.target.value)
+                                }
+                                onKeyDown={handleValueKeyDown}
+                                placeholder="0"
+                                aria-label={`${item.name} kolom ${sIdx + 1}`}
+                                className="flex-1 min-w-0 w-full text-center text-lg font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
+                              />
+                              {slot.u.trim() !== '' && (
+                                <span className="ml-1 px-2 py-0.5 rounded-lg bg-slate-200/85 text-sm font-extrabold text-slate-800 select-none whitespace-nowrap shrink-0">
+                                  {slot.u}
+                                </span>
+                              )}
+                            </label>
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+
+                    {/* 3-Dots Menu Trigger at Far Right */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId((prev) => (prev === item.id ? null : item.id));
+                        }}
+                        aria-label="Menu opsi barang"
+                        className={`w-8 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+                          isMenuOpen
+                            ? 'bg-slate-200 text-slate-900'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+
+                      {/* Floating Popover when 3-dots clicked */}
+                      <AnimatePresence>
+                        {isMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                            transition={{ duration: 0.14 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="absolute right-0 top-10 z-50 w-36 bg-white border border-slate-200 rounded-xl shadow-xl py-1 overflow-hidden"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setEditingItemId(item.id);
+                              }}
+                              className="w-full px-3.5 py-2 text-left text-xs font-extrabold text-slate-800 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 cursor-pointer"
+                            >
+                              <Pencil className="w-3.5 h-3.5 text-blue-600" />
+                              <span>Edit</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                handleDeleteItem(item, index);
+                              }}
+                              className="w-full px-3.5 py-2 text-left text-xs font-extrabold text-rose-600 hover:bg-rose-50 flex items-center gap-2 border-t border-slate-100 cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Hapus</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         )}
       </main>
 
       {/* Fixed Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-3.5 py-2.5">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
-          {isEditMode ? (
-            <>
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                onClick={() => {
-                  setNewName('');
-                  setNewUnits(['Pack']);
-                  setShowAddModal(true);
-                }}
-                className="flex-1 h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.75]" />
-                <span>Tambah Barang</span>
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                onClick={() => setIsEditMode(false)}
-                className="h-11 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
-              >
-                <Check className="w-4 h-4 stroke-[2.75]" />
-                <span>Selesai</span>
-              </motion.button>
-            </>
-          ) : (
-            <>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                type="button"
-                onClick={() => setShowPreviewModal(true)}
-                title="Lihat pratinjau pesan"
-                className="h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
-              >
-                <Eye className="w-4 h-4 text-slate-600" />
-                <span className="hidden sm:inline">Pratinjau</span>
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                type="button"
-                onClick={handleCopyReport}
-                title="Salin teks laporan"
-                className="h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
-              >
-                <Copy className="w-4 h-4 text-slate-600" />
-                <span>Salin</span>
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                onClick={handleClickSendDock}
-                className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 cursor-pointer"
-              >
-                <Send className="w-4 h-4" />
-                <span>Kirim ke WhatsApp</span>
-                <span className="text-xs font-extrabold bg-black/15 px-2 py-0.5 rounded-lg tabular-nums">
-                  {filledCount}/{totalCount}
-                </span>
-              </motion.button>
-            </>
-          )}
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={() => setShowPreviewModal(true)}
+            title="Lihat pratinjau pesan"
+            className="h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+          >
+            <Eye className="w-4 h-4 text-slate-600" />
+            <span className="hidden sm:inline">Pratinjau</span>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="button"
+            onClick={handleCopyReport}
+            title="Salin teks laporan"
+            className="h-11 px-3.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
+          >
+            <Copy className="w-4 h-4 text-slate-600" />
+            <span>Salin</span>
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            type="button"
+            onClick={handleClickSendDock}
+            className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 cursor-pointer"
+          >
+            <Send className="w-4 h-4" />
+            <span>Kirim ke WhatsApp</span>
+            <span className="text-xs font-extrabold bg-black/15 px-2 py-0.5 rounded-lg tabular-nums">
+              {filledCount}/{totalCount}
+            </span>
+          </motion.button>
         </div>
       </div>
 

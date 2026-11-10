@@ -43,7 +43,7 @@
       .sf-badge { font-size: 12px; font-weight: 800; color: #475569; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
       .sf-badge.bump { transform: scale(1.22); color: #2563eb; }
       .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
-      .sf-actions { display: flex; align-items: center; gap: 14px; }
+      .sf-actions { display: flex; align-items: center; gap: 12px; }
       .sf-btn {
         border: 0; outline: 0; font: inherit; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -55,9 +55,9 @@
         height: 36px; padding: 0 12px; background: #f8fafc; color: #334155;
         border: 1px solid #e2e8f0;
       }
-      .sf-btn-edit {
-        height: 36px; padding: 0 16px; background: #0f172a; color: #fff;
-        box-shadow: 0 2px 6px rgba(15,23,42,0.12);
+      .sf-btn-add-top {
+        height: 36px; padding: 0 14px; background: #2563eb; color: #fff;
+        box-shadow: 0 2px 6px rgba(37,99,235,0.2);
       }
       .sf-prog { margin-top: 8px; height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
       .sf-prog-bar {
@@ -66,44 +66,50 @@
         border-radius: 99px;
         transition: width 0.45s var(--ease);
       }
-      /* Normal list */
-      .sf-normal-card {
+      /* List Card */
+      .sf-list-card {
         margin-top: 12px; background: #fff; border: 1px solid #e2e8f0;
-        border-radius: 16px; overflow: hidden; box-shadow: 0 1px 3px rgba(15,23,42,0.03);
+        border-radius: 16px; box-shadow: 0 1px 3px rgba(15,23,42,0.03);
       }
       .sf-row {
+        position: relative;
         display: flex; align-items: center; justify-content: space-between; gap: 8px;
-        padding: 8px 12px; border-bottom: 1px solid #f1f5f9;
-        transition: background 0.2s;
+        padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+        transition: translate 0.38s var(--spring), scale 0.28s var(--spring), background 0.15s;
+        will-change: translate, scale;
       }
       .sf-row:last-child { border-bottom: 0; }
-      .sf-row.filled { background: rgba(239,246,255,0.45); }
+      .sf-row.filled { background: rgba(239,246,255,0.25); }
+      .sf-row.is-holding { scale: 0.985; background: #eff6ff !important; }
+      .sf-row.is-dragging {
+        z-index: 45 !important; scale: 1.025; background: #fff !important; border-radius: 16px !important;
+        box-shadow: 0 24px 48px -12px rgba(15,23,42,0.24), 0 0 0 2px #2563eb !important;
+        transition: scale 0.28s var(--spring), box-shadow 0.28s var(--ease) !important;
+      }
+      .sf-row.is-dropping {
+        z-index: 40 !important;
+        transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
+      }
       .sf-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-      .sf-num-wrap { width: 24px; height: 24px; position: relative; flex-shrink: 0; }
       .sf-num {
-        position: absolute; inset: 0; border-radius: 8px;
-        background: #f1f5f9; color: #64748b;
-        font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
-        display: flex; align-items: center; justify-content: center;
-        transition: transform 0.25s ease, opacity 0.2s ease;
+        width: 28px; height: 28px; border-radius: 8px;
+        background: #f8fafc; border: 2px solid #e2e8f0; color: #0f172a;
+        font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums;
+        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        transition: border-color 0.2s, background 0.2s;
       }
-      .sf-blue-chk {
-        position: absolute; inset: 0; border-radius: 50%;
-        background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 2px 6px rgba(37,99,235,0.3);
-        transform: scale(0) rotate(-25deg); opacity: 0;
-        transition: transform 0.4s var(--spring), opacity 0.25s ease;
+      .sf-row.filled .sf-num {
+        border-color: #2563eb; background: #ffffff; color: #0f172a;
       }
-      .sf-blue-chk svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-      .sf-row.filled .sf-num { transform: scale(0.5); opacity: 0; }
-      .sf-row.filled .sf-blue-chk { transform: scale(1) rotate(0deg); opacity: 1; }
-      .sf-name-txt { font-size: 14px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .sf-row.filled .sf-name-txt { color: #0f172a; }
-      .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
-      .sf-plus-sep { font-size: 12px; font-weight: 800; color: #94a3b8; }
+      .sf-name-txt {
+        font-size: 16px; font-weight: 700; color: #0f172a;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .sf-right-box { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
+      .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
+      .sf-plus-sep { font-size: 14px; font-weight: 800; color: #94a3b8; }
       .sf-input-box {
-        display: inline-flex; align-items: center; height: 36px; width: 118px;
+        display: inline-flex; align-items: center; height: 40px; width: 128px;
         padding: 0 6px 0 8px;
         border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
         transition: all 0.15s;
@@ -112,77 +118,89 @@
         background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
       }
       .sf-input-box.has-val {
-        background: #fff; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+        background: #fff; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.14);
       }
       .sf-val-inp {
         flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent;
-        text-align: center; font: inherit; font-size: 14px; font-weight: 800; color: #0f172a;
+        text-align: center; font: inherit; font-size: 18px; font-weight: 800; color: #0f172a;
         font-variant-numeric: tabular-nums;
       }
       .sf-val-inp::placeholder { color: #cbd5e1; }
       .sf-unit-lbl {
-        margin-left: 4px; padding: 2px 6px; border-radius: 6px;
+        margin-left: 4px; padding: 2px 8px; border-radius: 8px;
         background: rgba(226,232,240,0.85); color: #1e293b;
-        font-size: 11px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
+        font-size: 14px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
       }
-      /* Edit Mode */
-      .sf-edit-list { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
-      .sf-edit-card {
-        position: relative; background: #fff; border: 1px solid #e2e8f0;
-        border-radius: 16px; padding: 12px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);
-        transition: translate 0.38s var(--spring), scale 0.28s var(--spring), box-shadow 0.28s var(--ease), border-color 0.2s;
-        will-change: translate, scale;
+      /* 3-dots button & popover */
+      .sf-more-wrap { position: relative; }
+      .sf-more-btn {
+        width: 32px; height: 36px; border-radius: 8px; border: 0; background: transparent;
+        color: #94a3b8; font-size: 18px; font-weight: 800; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
       }
-      .sf-edit-card.is-holding { scale: 0.985; border-color: #93c5fd; background: #f8faff; }
-      .sf-edit-card.is-dragging {
-        z-index: 40 !important; scale: 1.03; border-color: #3b82f6 !important; background: #fff !important;
-        box-shadow: 0 24px 48px -12px rgba(15,23,42,0.22), 0 0 0 3px rgba(59,130,246,0.2) !important;
-        transition: scale 0.28s var(--spring), box-shadow 0.28s var(--ease) !important;
+      .sf-more-btn:hover { background: #f1f5f9; color: #334155; }
+      .sf-popover {
+        position: absolute; right: 0; top: 40px; z-index: 50;
+        width: 140px; background: #fff; border: 1px solid #e2e8f0;
+        border-radius: 12px; box-shadow: 0 12px 28px rgba(15,23,42,0.15);
+        overflow: hidden; animation: sfPopIn 0.14s var(--spring);
       }
-      .sf-edit-card.is-dropping {
-        z-index: 35 !important;
-        transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
+      .sf-pop-item {
+        width: 100%; padding: 9px 14px; border: 0; background: transparent;
+        text-align: left; font: inherit; font-size: 13px; font-weight: 800;
+        color: #1e293b; cursor: pointer; display: flex; align-items: center; gap: 8px;
       }
-      .sf-edit-top { display: flex; align-items: center; gap: 10px; }
+      .sf-pop-item:hover { background: #eff6ff; color: #2563eb; }
+      .sf-pop-item.danger { color: #e11d48; border-top: 1px solid #f1f5f9; }
+      .sf-pop-item.danger:hover { background: #fff1f2; }
+      /* Single-Item Inline Edit Row */
+      .sf-row-editing {
+        display: block; padding: 14px; background: rgba(239,246,255,0.55);
+        border: 2px solid #3b82f6; border-radius: 14px;
+      }
+      .sf-edit-top { display: flex; align-items: center; gap: 8px; }
       .sf-grip {
         height: 40px; padding: 0 10px; border-radius: 12px;
-        background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155;
+        background: #fff; border: 2px solid #bfdbfe; color: #1e293b;
         display: inline-flex; align-items: center; gap: 4px;
         cursor: grab; user-select: none; touch-action: none; flex-shrink: 0;
-        font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+        font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums;
       }
       .sf-grip:active { cursor: grabbing; background: #2563eb; color: #fff; border-color: #2563eb; }
       .sf-name-inp {
         flex: 1; min-width: 0; height: 40px; padding: 0 12px;
-        border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
-        font: inherit; font-size: 14px; font-weight: 800; color: #0f172a; outline: 0;
+        border-radius: 12px; background: #fff; border: 2px solid #60a5fa;
+        font: inherit; font-size: 16px; font-weight: 800; color: #0f172a; outline: 0;
       }
-      .sf-name-inp:focus { background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14); }
       .sf-del-btn {
         width: 40px; height: 40px; border-radius: 12px;
         background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48;
         display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
       }
+      .sf-done-inline {
+        height: 40px; padding: 0 14px; border-radius: 12px; border: 0;
+        background: #2563eb; color: #fff; font: inherit; font-size: 12px; font-weight: 800;
+        cursor: pointer; flex-shrink: 0;
+      }
       .sf-edit-units {
-        margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9;
-        display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+        margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(191,219,254,0.6);
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
       }
       .sf-unit-chip {
         display: inline-flex; align-items: center; height: 32px;
-        border-radius: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; overflow: hidden;
+        border-radius: 12px; background: #fff; border: 1px solid #cbd5e1; overflow: hidden;
       }
       .sf-unit-chip-btn {
         border: 0; background: transparent; height: 100%; padding: 0 12px;
-        font: inherit; font-size: 12px; font-weight: 800; color: #0f172a; cursor: pointer;
+        font: inherit; font-size: 13px; font-weight: 800; color: #1d4ed8; cursor: pointer;
       }
       .sf-unit-chip-rm {
         border: 0; border-left: 1px solid #cbd5e1; background: transparent;
         height: 100%; padding: 0 8px; color: #475569; cursor: pointer; font-weight: 800;
       }
-      .sf-unit-chip-rm:hover { background: #ffe4e6; color: #e11d48; }
       .sf-add-unit-btn {
         height: 32px; padding: 0 12px; border-radius: 12px;
-        background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;
+        background: #fff; border: 1px solid #93c5fd; color: #1d4ed8;
         font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
       }
       /* Dock */
@@ -308,10 +326,14 @@
           try { localStorage.setItem(LS_KEY, JSON.stringify({ items: items, theme: 'light', day: toDateVal() })); } catch (e) {}
         };
 
-        var isEdit = false;
+        var editingId = null;
+        var openMenuId = null;
         var root = document.getElementById('root');
 
-        // Format: "Sayap = 5 Pack + 2 Porsi"
+        window.addEventListener('click', function () {
+          if (openMenuId) { openMenuId = null; render(); }
+        });
+
         var buildReport = function (dateStr) {
           var head = '*Sisa Fisik* – ' + formatDateId(dateStr || toDateVal());
           var lines = items.map(function (it) {
@@ -506,12 +528,10 @@
             '<div><div class="sf-title-box"><h1 class="sf-title">Sisa Fisik</h1>' +
             '<span class="sf-badge" id="sf-stat-badge">' + done + '/' + tot + ' terisi</span></div>' +
             '<p class="sf-date">' + formatDateId(toDateVal()) + '</p></div>' +
-            (!isEdit
-              ? '<div class="sf-actions">' +
-                '<button class="sf-btn sf-btn-reset" id="sf-reset-btn">Reset</button>' +
-                '<button class="sf-btn sf-btn-edit" id="sf-edit-btn">✎ Edit</button>' +
-                '</div>'
-              : '') +
+            '<div class="sf-actions">' +
+            '<button class="sf-btn sf-btn-reset" id="sf-reset-btn">Reset</button>' +
+            '<button class="sf-btn sf-btn-add-top" id="sf-add-top-btn">+ Barang</button>' +
+            '</div>' +
             '</div>' +
             '<div class="sf-prog"><div class="sf-prog-bar" id="sf-prog-bar" style="width:' + pct + '%"></div></div>' +
             '</div></header>' +
@@ -519,97 +539,45 @@
             '<div class="sf-dock"><div class="sf-dock-inner" id="sf-dock-inner"></div></div>' +
             '</div>';
 
-          var editBtn = document.getElementById('sf-edit-btn');
-          if (editBtn) {
-            editBtn.onclick = function () { isEdit = true; render(); };
-          }
-          var resetBtn = document.getElementById('sf-reset-btn');
-          if (resetBtn) {
-            resetBtn.onclick = openResetConfirmPopup;
-          }
+          document.getElementById('sf-reset-btn').onclick = openResetConfirmPopup;
+          document.getElementById('sf-add-top-btn').onclick = openAddItemModal;
 
           var main = document.getElementById('sf-main');
-          if (!isEdit) {
-            var card = document.createElement('div');
-            card.className = 'sf-normal-card';
-            items.forEach(function (item, idx) {
-              var row = document.createElement('div');
-              row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
-              row.innerHTML =
-                '<div class="sf-row-left">' +
-                '<div class="sf-num-wrap">' +
-                '<span class="sf-num">' + (idx + 1) + '</span>' +
-                '<span class="sf-blue-chk"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
-                '</div>' +
-                '<span class="sf-name-txt"></span></div>' +
-                '<div class="sf-slots"></div>';
-              row.querySelector('.sf-name-txt').textContent = item.name;
-              var slotsBox = row.querySelector('.sf-slots');
-              item.slots.forEach(function (slot, sIdx) {
-                if (sIdx > 0) {
-                  var sep = document.createElement('span');
-                  sep.className = 'sf-plus-sep';
-                  sep.textContent = '+';
-                  slotsBox.appendChild(sep);
-                }
-                var lbl = document.createElement('label');
-                lbl.className = 'sf-input-box' + (slot.v.trim() !== '' ? ' has-val' : '');
-                var inp = document.createElement('input');
-                inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = '0';
-                inp.className = 'sf-val-inp'; inp.value = slot.v;
-                inp.oninput = function () {
-                  slot.v = inp.value;
-                  lbl.classList.toggle('has-val', slot.v.trim() !== '');
-                  row.classList.toggle('filled', isFilled(item));
-                  save(); updateHeaderStats();
-                };
-                inp.onkeydown = function (e) {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    var all = Array.prototype.slice.call(card.querySelectorAll('.sf-val-inp'));
-                    var next = all[all.indexOf(inp) + 1];
-                    if (next) { next.focus(); next.select(); } else inp.blur();
-                  }
-                };
-                lbl.appendChild(inp);
-                if (slot.u.trim() !== '') {
-                  var uSpan = document.createElement('span');
-                  uSpan.className = 'sf-unit-lbl';
-                  uSpan.textContent = slot.u;
-                  lbl.appendChild(uSpan);
-                }
-                slotsBox.appendChild(lbl);
-              });
-              card.appendChild(row);
-            });
-            main.appendChild(card);
-          } else {
-            var listEl = document.createElement('div');
-            listEl.className = 'sf-edit-list';
-            items.forEach(function (item, idx) {
+          var listCard = document.createElement('div');
+          listCard.className = 'sf-list-card';
+
+          items.forEach(function (item, idx) {
+            if (editingId === item.id) {
               var ec = document.createElement('div');
-              ec.className = 'sf-edit-card';
+              ec.className = 'sf-row sf-row-editing';
               ec.innerHTML =
                 '<div class="sf-edit-top">' +
-                '<div class="sf-grip" title="Tahan & geser"><span>⠿</span><span>' + (idx + 1) + '</span></div>' +
+                '<div class="sf-grip" title="Tahan & geser untuk ubah posisi urutan"><span>⠿</span><span>' + (idx + 1) + '</span></div>' +
                 '<input class="sf-name-inp" type="text">' +
-                '<button class="sf-del-btn" title="Hapus">🗑</button></div>' +
-                '<div class="sf-edit-units"></div>';
+                '<button class="sf-del-btn" title="Hapus">🗑</button>' +
+                '<button class="sf-done-inline">✓ Selesai</button></div>' +
+                '<div class="sf-edit-units"><div class="sf-u-left" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px"></div>' +
+                '<span style="font-size:11px;font-weight:700;color:#1d4ed8">Tahan nomor di kiri untuk geser posisi</span></div>';
               var nameInp = ec.querySelector('.sf-name-inp');
               nameInp.value = item.name;
               nameInp.oninput = function () { item.name = nameInp.value; save(); };
               ec.querySelector('.sf-del-btn').onclick = function () {
+                editingId = null;
                 var removed = items.splice(idx, 1)[0];
                 save(); render();
                 showToast('"' + removed.name + '" dihapus', function () { items.splice(idx, 0, removed); save(); });
               };
-              var uRow = ec.querySelector('.sf-edit-units');
+              ec.querySelector('.sf-done-inline').onclick = function () {
+                if (!item.name.trim()) item.name = 'Barang';
+                editingId = null; save(); render();
+              };
+              var uRow = ec.querySelector('.sf-u-left');
               item.slots.forEach(function (slot, sIdx) {
                 var chip = document.createElement('div');
                 chip.className = 'sf-unit-chip';
                 var cBtn = document.createElement('button');
                 cBtn.className = 'sf-unit-chip-btn';
-                cBtn.textContent = 'Kolom ' + (sIdx + 1) + ': ' + (slot.u.trim() || 'Pack');
+                cBtn.textContent = '#' + (sIdx + 1) + ' ' + (slot.u.trim() || 'Pack');
                 cBtn.onclick = function () { openUnitPopup(item, 'edit', sIdx); };
                 chip.appendChild(cBtn);
                 if (item.slots.length > 1) {
@@ -636,13 +604,12 @@
                 var pid = e.pointerId;
                 ec.classList.add('is-holding');
                 var holdT = setTimeout(function () {
-                  var els = Array.prototype.slice.call(listEl.children);
+                  var els = Array.prototype.slice.call(listCard.children);
                   var from = els.indexOf(ec);
                   var sy = window.scrollY;
                   var rects = els.map(function (c) { return c.getBoundingClientRect(); });
                   var tops = rects.map(function (r) { return r.top + sy; });
                   var hs = rects.map(function (r) { return r.height; });
-                  var gap = els.length > 1 ? rects[1].top - rects[0].bottom : 10;
                   var target = from;
                   ec.classList.remove('is-holding');
                   ec.classList.add('is-dragging');
@@ -660,7 +627,7 @@
                     for (var k = from - 1; k >= 0; k--) if (center < tops[k] + hs[k] / 2) nt = k;
                     if (nt !== target) {
                       target = nt;
-                      var shift = hs[from] + gap;
+                      var shift = hs[from];
                       els.forEach(function (c, m) {
                         if (m === from) return;
                         var off = 0;
@@ -701,27 +668,104 @@
                 grip.addEventListener('pointercancel', cancelHold);
               };
 
-              listEl.appendChild(ec);
+              listCard.appendChild(ec);
+              return;
+            }
+
+            var row = document.createElement('div');
+            row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
+            row.innerHTML =
+              '<div class="sf-row-left">' +
+              '<span class="sf-num">' + (idx + 1) + '</span>' +
+              '<span class="sf-name-txt"></span></div>' +
+              '<div class="sf-right-box"><div class="sf-slots"></div><div class="sf-more-wrap"></div></div>';
+            row.querySelector('.sf-name-txt').textContent = item.name;
+            var slotsBox = row.querySelector('.sf-slots');
+            item.slots.forEach(function (slot, sIdx) {
+              if (sIdx > 0) {
+                var sep = document.createElement('span');
+                sep.className = 'sf-plus-sep';
+                sep.textContent = '+';
+                slotsBox.appendChild(sep);
+              }
+              var lbl = document.createElement('label');
+              lbl.className = 'sf-input-box' + (slot.v.trim() !== '' ? ' has-val' : '');
+              var inp = document.createElement('input');
+              inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = '0';
+              inp.className = 'sf-val-inp'; inp.value = slot.v;
+              inp.oninput = function () {
+                slot.v = inp.value;
+                lbl.classList.toggle('has-val', slot.v.trim() !== '');
+                row.classList.toggle('filled', isFilled(item));
+                save(); updateHeaderStats();
+              };
+              inp.onkeydown = function (e) {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  var all = Array.prototype.slice.call(listCard.querySelectorAll('.sf-val-inp'));
+                  var next = all[all.indexOf(inp) + 1];
+                  if (next) { next.focus(); next.select(); } else inp.blur();
+                }
+              };
+              lbl.appendChild(inp);
+              if (slot.u.trim() !== '') {
+                var uSpan = document.createElement('span');
+                uSpan.className = 'sf-unit-lbl';
+                uSpan.textContent = slot.u;
+                lbl.appendChild(uSpan);
+              }
+              slotsBox.appendChild(lbl);
             });
-            main.appendChild(listEl);
-          }
+
+            var moreWrap = row.querySelector('.sf-more-wrap');
+            var moreBtn = document.createElement('button');
+            moreBtn.className = 'sf-more-btn';
+            moreBtn.textContent = '⋮';
+            moreBtn.onclick = function (e) {
+              e.stopPropagation();
+              openMenuId = openMenuId === item.id ? null : item.id;
+              render();
+            };
+            moreWrap.appendChild(moreBtn);
+
+            if (openMenuId === item.id) {
+              var pop = document.createElement('div');
+              pop.className = 'sf-popover';
+              pop.onclick = function (e) { e.stopPropagation(); };
+              var edBtn = document.createElement('button');
+              edBtn.className = 'sf-pop-item';
+              edBtn.innerHTML = '<span>✎</span><span>Edit</span>';
+              edBtn.onclick = function () {
+                openMenuId = null;
+                editingId = item.id;
+                render();
+              };
+              var delB = document.createElement('button');
+              delB.className = 'sf-pop-item danger';
+              delB.innerHTML = '<span>🗑</span><span>Hapus</span>';
+              delB.onclick = function () {
+                openMenuId = null;
+                var removed = items.splice(idx, 1)[0];
+                save(); render();
+                showToast('"' + removed.name + '" dihapus', function () { items.splice(idx, 0, removed); save(); });
+              };
+              pop.appendChild(edBtn);
+              pop.appendChild(delB);
+              moreWrap.appendChild(pop);
+            }
+
+            listCard.appendChild(row);
+          });
+          main.appendChild(listCard);
 
           var dock = document.getElementById('sf-dock-inner');
-          if (isEdit) {
-            dock.innerHTML =
-              '<button class="sf-btn" id="sf-dock-add" style="flex:1;height:44px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px">+ Tambah Barang</button>' +
-              '<button class="sf-btn" id="sf-dock-done" style="height:44px;padding:0 22px;border-radius:14px;background:#0f172a;color:#fff;font-size:14px">✓ Selesai</button>';
-            document.getElementById('sf-dock-add').onclick = openAddItemModal;
-            document.getElementById('sf-dock-done').onclick = function () { isEdit = false; render(); };
-          } else {
-            dock.innerHTML =
-              '<button class="sf-btn sf-btn-sec" id="sf-copy-btn">Salin</button>' +
-              '<button class="sf-btn sf-btn-wa" id="sf-wa-btn"><span>Kirim ke WhatsApp</span><span id="sf-wa-count" style="font-size:12px;background:rgba(0,0,0,0.16);padding:2px 8px;border-radius:8px">' + done + '/' + tot + '</span></button>';
-            document.getElementById('sf-copy-btn').onclick = function () {
-              try { navigator.clipboard.writeText(buildReport(toDateVal())); showToast('Teks laporan berhasil disalin!'); } catch (e) {}
-            };
-            document.getElementById('sf-wa-btn').onclick = openDatePopupAndSend;
-          }
+          dock.innerHTML =
+            '<button class="sf-btn sf-btn-sec" id="sf-copy-btn">Salin</button>' +
+            '<button class="sf-btn sf-btn-wa" id="sf-wa-btn"><span>Kirim ke WhatsApp</span><span id="sf-wa-count" style="font-size:12px;background:rgba(0,0,0,0.16);padding:2px 8px;border-radius:8px">' + done + '/' + tot + '</span></button>';
+          document.getElementById('sf-copy-btn').onclick = function () {
+            try { navigator.clipboard.writeText(buildReport(toDateVal())); showToast('Teks laporan berhasil disalin!'); } catch (e) {}
+          };
+          document.getElementById('sf-wa-btn').onclick = openDatePopupAndSend;
         };
 
         render();
