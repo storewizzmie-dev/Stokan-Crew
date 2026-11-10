@@ -28,8 +28,8 @@
         min-height: 100dvh;
         -webkit-font-smoothing: antialiased;
       }
-      .sf-standalone { padding-top: 76px; padding-bottom: 104px; min-height: 100dvh; }
-      .sf-wrap { max-width: 672px; margin: 0 auto; padding: 0 14px; }
+      .sf-standalone { padding-top: 74px; padding-bottom: 100px; min-height: 100dvh; }
+      .sf-wrap { max-width: 672px; margin: 0 auto; padding: 0 10px; }
       .sf-header {
         position: fixed; top: 0; left: 0; right: 0; z-index: 40;
         background: #ffffff;
@@ -39,15 +39,15 @@
       }
       .sf-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
       .sf-title-box { display: flex; align-items: center; gap: 8px; }
-      .sf-title { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
+      .sf-title { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
       .sf-badge { font-size: 12px; font-weight: 800; color: #475569; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
       .sf-badge.bump { transform: scale(1.22); color: #2563eb; }
-      .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
-      .sf-actions { display: flex; align-items: center; gap: 12px; }
+      .sf-date { margin: 2px 0 0; font-size: 11.5px; font-weight: 600; color: #64748b; }
+      .sf-actions { display: flex; align-items: center; gap: 10px; }
       .sf-btn {
         border: 0; outline: 0; font: inherit; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        border-radius: 12px; font-weight: 800; font-size: 13px;
+        border-radius: 12px; font-weight: 800; font-size: 12px;
         transition: transform 0.2s var(--spring), background 0.2s, box-shadow 0.2s;
       }
       .sf-btn:active { transform: scale(0.93); }
@@ -68,86 +68,92 @@
       }
       /* List Card */
       .sf-list-card {
-        margin-top: 12px; background: #fff; border: 1px solid #e2e8f0;
+        margin-top: 10px; background: #fff; border: 1px solid #e2e8f0;
         border-radius: 16px; box-shadow: 0 1px 3px rgba(15,23,42,0.03);
       }
       .sf-row {
         position: relative;
-        display: flex; align-items: center; justify-content: space-between; gap: 8px;
-        padding: 10px 12px; border-bottom: 1px solid #f1f5f9;
+        display: flex; align-items: center; justify-content: space-between; gap: 6px;
+        padding: 8px 10px; border-bottom: 1px solid #f1f5f9;
         transition: translate 0.38s var(--spring), scale 0.28s var(--spring), background 0.15s;
-        will-change: translate, scale;
       }
       .sf-row:last-child { border-bottom: 0; }
+      .sf-row.menu-open { z-index: 35 !important; }
       .sf-row.filled { background: rgba(239,246,255,0.25); }
-      .sf-row.is-holding { scale: 0.985; background: #eff6ff !important; }
+      .sf-row.is-holding { scale: 0.985; background: #eff6ff !important; will-change: translate, scale; }
       .sf-row.is-dragging {
         z-index: 45 !important; scale: 1.025; background: #fff !important; border-radius: 16px !important;
         box-shadow: 0 24px 48px -12px rgba(15,23,42,0.24), 0 0 0 2px #2563eb !important;
         transition: scale 0.28s var(--spring), box-shadow 0.28s var(--ease) !important;
+        will-change: translate, scale;
       }
       .sf-row.is-dropping {
         z-index: 40 !important;
         transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
+        will-change: translate, scale;
       }
-      .sf-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+      .sf-row-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
       .sf-num {
-        width: 28px; height: 28px; border-radius: 8px;
-        background: #f8fafc; border: 2px solid #e2e8f0; color: #0f172a;
-        font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums;
+        width: 24px; height: 24px; border-radius: 6px;
+        background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a;
+        font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
         display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
         transition: border-color 0.2s, background 0.2s;
       }
       .sf-row.filled .sf-num {
-        border-color: #2563eb; background: #ffffff; color: #0f172a;
+        border: 2px solid #2563eb; background: #93c5fd; color: #0f172a;
       }
       .sf-name-txt {
-        font-size: 16px; font-weight: 700; color: #0f172a;
+        font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.25;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       }
-      .sf-right-box { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
-      .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; }
-      .sf-plus-sep { font-size: 14px; font-weight: 800; color: #94a3b8; }
+      .sf-right-box { display: flex; align-items: center; justify-content: flex-end; gap: 2px; flex-shrink: 0; }
+      .sf-slots { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+      .sf-plus-sep { font-size: 12px; font-weight: 800; color: #cbd5e1; user-select: none; }
       .sf-input-box {
-        display: inline-flex; align-items: center; height: 40px; width: 128px;
-        padding: 0 6px 0 8px;
-        border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
-        transition: all 0.15s;
+        display: inline-flex; align-items: center; justify-content: space-between;
+        height: 36px; width: 104px;
+        padding: 0 6px; border: 0;
+        border-radius: 8px; background: transparent;
+        cursor: text; transition: background 0.15s;
       }
+      .sf-input-box.two { width: 72px; }
       .sf-input-box:focus-within {
-        background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
+        background: rgba(239,246,255,0.7);
       }
       .sf-input-box.has-val {
-        background: #fff; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.14);
+        background: rgba(239,246,255,0.6);
       }
       .sf-val-inp {
         flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent;
-        text-align: center; font: inherit; font-size: 18px; font-weight: 800; color: #0f172a;
+        text-align: center; font: inherit; font-size: 14px; font-weight: 800; color: #0f172a;
         font-variant-numeric: tabular-nums;
       }
       .sf-val-inp::placeholder { color: #cbd5e1; }
       .sf-unit-lbl {
-        margin-left: 4px; padding: 2px 8px; border-radius: 8px;
-        background: rgba(226,232,240,0.85); color: #1e293b;
-        font-size: 14px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
+        margin-left: 4px;
+        color: #64748b;
+        font-size: 11.5px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
       }
+      .sf-input-box.has-val .sf-unit-lbl { color: #1d4ed8; }
       /* 3-dots button & popover */
       .sf-more-wrap { position: relative; }
       .sf-more-btn {
-        width: 32px; height: 36px; border-radius: 8px; border: 0; background: transparent;
-        color: #94a3b8; font-size: 18px; font-weight: 800; cursor: pointer;
+        width: 26px; height: 32px; border-radius: 8px; border: 0; background: transparent;
+        color: #94a3b8; font-size: 17px; font-weight: 800; cursor: pointer;
         display: flex; align-items: center; justify-content: center;
       }
-      .sf-more-btn:hover { background: #f1f5f9; color: #334155; }
+      .sf-more-btn:hover, .sf-more-btn.active { background: #dbeafe; color: #1d4ed8; }
       .sf-popover {
-        position: absolute; right: 0; top: 40px; z-index: 50;
+        position: absolute; right: 0; top: 36px; z-index: 60;
         width: 140px; background: #fff; border: 1px solid #e2e8f0;
-        border-radius: 12px; box-shadow: 0 12px 28px rgba(15,23,42,0.15);
+        border-radius: 12px; box-shadow: 0 14px 32px rgba(15,23,42,0.18);
         overflow: hidden; animation: sfPopIn 0.14s var(--spring);
       }
+      .sf-popover.up { top: auto; bottom: 36px; }
       .sf-pop-item {
-        width: 100%; padding: 9px 14px; border: 0; background: transparent;
-        text-align: left; font: inherit; font-size: 13px; font-weight: 800;
+        width: 100%; padding: 10px 14px; border: 0; background: transparent;
+        text-align: left; font: inherit; font-size: 12.5px; font-weight: 800;
         color: #1e293b; cursor: pointer; display: flex; align-items: center; gap: 8px;
       }
       .sf-pop-item:hover { background: #eff6ff; color: #2563eb; }
@@ -672,8 +678,10 @@
               return;
             }
 
+            var isMenuOpen = openMenuId === item.id;
+            var openUp = idx >= items.length - 2 && items.length > 3;
             var row = document.createElement('div');
-            row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
+            row.className = 'sf-row' + (isFilled(item) ? ' filled' : '') + (isMenuOpen ? ' menu-open' : '');
             row.innerHTML =
               '<div class="sf-row-left">' +
               '<span class="sf-num">' + (idx + 1) + '</span>' +
@@ -689,7 +697,7 @@
                 slotsBox.appendChild(sep);
               }
               var lbl = document.createElement('label');
-              lbl.className = 'sf-input-box' + (slot.v.trim() !== '' ? ' has-val' : '');
+              lbl.className = 'sf-input-box' + (item.slots.length > 1 ? ' two' : '') + (slot.v.trim() !== '' ? ' has-val' : '');
               var inp = document.createElement('input');
               inp.type = 'text'; inp.inputMode = 'decimal'; inp.placeholder = '0';
               inp.className = 'sf-val-inp'; inp.value = slot.v;
@@ -719,7 +727,7 @@
 
             var moreWrap = row.querySelector('.sf-more-wrap');
             var moreBtn = document.createElement('button');
-            moreBtn.className = 'sf-more-btn';
+            moreBtn.className = 'sf-more-btn' + (isMenuOpen ? ' active' : '');
             moreBtn.textContent = '⋮';
             moreBtn.onclick = function (e) {
               e.stopPropagation();
@@ -728,9 +736,9 @@
             };
             moreWrap.appendChild(moreBtn);
 
-            if (openMenuId === item.id) {
+            if (isMenuOpen) {
               var pop = document.createElement('div');
-              pop.className = 'sf-popover';
+              pop.className = 'sf-popover' + (openUp ? ' up' : '');
               pop.onclick = function (e) { e.stopPropagation(); };
               var edBtn = document.createElement('button');
               edBtn.className = 'sf-pop-item';

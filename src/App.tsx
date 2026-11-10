@@ -725,7 +725,7 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-2xl mx-auto px-3.5 pt-3">
+      <main className="max-w-2xl mx-auto px-2.5 sm:px-3.5 pt-2.5">
         {items.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -760,6 +760,7 @@ export default function App() {
               const isHighlighted = highlightedId === item.id;
               const isEditingThis = editingItemId === item.id;
               const isMenuOpen = openMenuId === item.id;
+              const openUpwards = index >= items.length - 2 && items.length > 3;
 
               /* ==================== SINGLE ITEM EDIT VIEW ==================== */
               if (isEditingThis) {
@@ -767,10 +768,10 @@ export default function App() {
                   <div
                     key={item.id}
                     id={`item-row-${item.id}`}
-                    className="list-row-item bg-blue-50/50 p-3.5 ring-2 ring-blue-500/80 rounded-xl z-20"
+                    className="list-row-item bg-blue-50/50 p-3 ring-2 ring-blue-500/80 rounded-xl z-20"
                   >
                     {/* Top Row: Hold-to-Drag Handle + Editable Name + Delete + Selesai */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                       <div
                         onPointerDown={handleGripPointerDown}
                         onPointerMove={handleGripPointerMove}
@@ -778,10 +779,10 @@ export default function App() {
                         onPointerCancel={finishDrag}
                         onContextMenu={(e) => e.preventDefault()}
                         title="Tahan sebentar lalu geser ke atas/bawah untuk ubah urutan"
-                        className="h-10 px-2.5 rounded-xl bg-white hover:bg-blue-50 active:bg-blue-600 active:text-white border-2 border-blue-200 text-slate-800 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0 shadow-2xs"
+                        className="h-9 px-2 rounded-xl bg-white hover:bg-blue-50 active:bg-blue-600 active:text-white border-2 border-blue-200 text-slate-800 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0 shadow-2xs"
                       >
-                        <GripVertical className="w-4 h-4 text-blue-600" />
-                        <span className="text-sm font-extrabold tabular-nums min-w-[18px] text-center">
+                        <GripVertical className="w-3.5 h-3.5 text-blue-600" />
+                        <span className="text-xs font-extrabold tabular-nums min-w-[16px] text-center">
                           {index + 1}
                         </span>
                       </div>
@@ -794,14 +795,14 @@ export default function App() {
                         onBlur={(e) => handleNameBlur(item.id, e.target.value)}
                         placeholder="Nama barang..."
                         aria-label="Nama barang"
-                        className="flex-1 min-w-0 h-10 px-3 rounded-xl bg-white border-2 border-blue-400 focus:border-blue-600 text-base font-extrabold text-slate-900 outline-none shadow-2xs"
+                        className="flex-1 min-w-0 h-9 px-2.5 rounded-xl bg-white border-2 border-blue-400 focus:border-blue-600 text-sm font-extrabold text-slate-900 outline-none shadow-2xs"
                       />
 
                       <button
                         type="button"
                         onClick={() => handleDeleteItem(item, index)}
                         title="Hapus barang ini"
-                        className="h-10 w-10 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                        className="h-9 w-9 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -809,16 +810,16 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setEditingItemId(null)}
-                        className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                        className="h-9 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold flex items-center gap-1 shrink-0 cursor-pointer shadow-xs"
                       >
-                        <Check className="w-4 h-4 stroke-[2.75]" />
+                        <Check className="w-3.5 h-3.5 stroke-[2.75]" />
                         <span>Selesai</span>
                       </button>
                     </div>
 
                     {/* Bottom Row: Unit Columns (Max 2) + Hold Hint */}
-                    <div className="mt-3 pt-2.5 border-t border-blue-200/60 flex flex-wrap items-center justify-between gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
+                    <div className="mt-2.5 pt-2 border-t border-blue-200/60 flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600">
                           <Layers className="w-3.5 h-3.5 text-blue-600" />
                           <span>Satuan:</span>
@@ -827,7 +828,7 @@ export default function App() {
                         {item.slots.map((slot, sIdx) => (
                           <div
                             key={sIdx}
-                            className="inline-flex items-center h-8 rounded-xl bg-white border border-slate-300 overflow-hidden shadow-2xs"
+                            className="inline-flex items-center h-7.5 rounded-lg bg-white border border-slate-300 overflow-hidden shadow-2xs"
                           >
                             <button
                               type="button"
@@ -841,12 +842,12 @@ export default function App() {
                                 })
                               }
                               title="Klik untuk ganti satuan"
-                              className="h-full px-3 text-xs font-extrabold text-slate-800 flex items-center gap-1.5 cursor-pointer hover:bg-slate-50"
+                              className="h-full px-2.5 text-xs font-extrabold text-slate-800 flex items-center gap-1 cursor-pointer hover:bg-slate-50"
                             >
-                              <span className="text-[11px] font-bold text-slate-400 tabular-nums">
+                              <span className="text-[10px] font-bold text-slate-400 tabular-nums">
                                 #{sIdx + 1}
                               </span>
-                              <span className="text-blue-700 font-extrabold text-sm">
+                              <span className="text-blue-700 font-extrabold text-xs">
                                 {slot.u || 'Pilih'}
                               </span>
                             </button>
@@ -856,7 +857,7 @@ export default function App() {
                                 type="button"
                                 onClick={() => handleRemoveSlot(item.id, sIdx)}
                                 title="Hapus kolom satuan ini"
-                                className="h-full px-2 hover:bg-rose-100 text-slate-400 hover:text-rose-600 border-l border-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+                                className="h-full px-1.5 hover:bg-rose-100 text-slate-400 hover:text-rose-600 border-l border-slate-200 flex items-center justify-center cursor-pointer transition-colors"
                               >
                                 <X className="w-3.5 h-3.5" />
                               </button>
@@ -874,9 +875,9 @@ export default function App() {
                                 mode: 'add',
                               })
                             }
-                            className="h-8 px-3 rounded-xl bg-white hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-300 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                            className="h-7.5 px-2.5 rounded-lg bg-white hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-300 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
                           >
-                            <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
+                            <Plus className="w-3 h-3 stroke-[2.75]" />
                             <span>Tambah Satuan</span>
                           </button>
                         )}
@@ -895,45 +896,54 @@ export default function App() {
                 <div
                   key={item.id}
                   id={`item-row-${item.id}`}
-                  className={`list-row-item flex items-center justify-between gap-2 px-3 py-2.5 transition-colors duration-150 ${
+                  className={`list-row-item flex items-center justify-between gap-1.5 sm:gap-2 px-2.5 py-2 sm:px-3.5 sm:py-2.5 transition-colors duration-150 ${
+                    isMenuOpen ? 'menu-open z-35' : ''
+                  } ${
                     isHighlighted
                       ? 'bg-blue-50'
                       : filled
-                      ? 'bg-blue-50/20'
+                      ? 'bg-blue-50/15'
                       : 'hover:bg-slate-50/70'
                   }`}
                 >
-                  {/* Left: Number Box (Blue Border & Black Text when filled) + Item Name (+1 size: text-base) */}
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  {/* Left: Number Box (Blue Fill + Blue Border & Black Text when filled) + Item Name */}
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <span
-                      className={`w-7 h-7 rounded-lg text-sm font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 text-slate-900 ${
+                      className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 text-slate-950 ${
                         filled
-                          ? 'border-2 border-blue-600 bg-white shadow-2xs'
-                          : 'border-2 border-slate-200 bg-slate-50'
+                          ? 'border-2 border-blue-600 bg-blue-300 shadow-2xs'
+                          : 'border border-slate-300 bg-slate-100'
                       }`}
                     >
                       {index + 1}
                     </span>
-                    <span className="text-base font-bold text-slate-900 truncate">
+                    <span className="text-[13.5px] sm:text-sm font-bold text-slate-900 leading-tight truncate">
                       {item.name}
                     </span>
                   </div>
 
-                  {/* Right: Quantity Inputs (Number +2 size: text-lg, Unit +2 size: text-sm) + 3-Dots Button */}
-                  <div className="flex items-center justify-end gap-1.5 shrink-0">
-                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                  {/* Right: Borderless Quantity Inputs (Wide touch reach, compact width) + 3-Dots Button */}
+                  <div className="flex items-center justify-end gap-0.5 sm:gap-1.5 shrink-0">
+                    <div className="flex items-center justify-end gap-1 sm:gap-2">
                       {item.slots.map((slot, sIdx) => {
                         const hasVal = slot.v.trim() !== '';
+                        const isTwoSlots = item.slots.length > 1;
                         return (
                           <React.Fragment key={sIdx}>
                             {sIdx > 0 && (
-                              <span className="text-sm font-extrabold text-slate-400">+</span>
+                              <span className="text-xs font-extrabold text-slate-300 select-none">
+                                +
+                              </span>
                             )}
                             <label
-                              className={`inline-flex items-center h-10 w-31 sm:w-35 rounded-xl border pl-2 pr-1.5 transition-all duration-150 ${
+                              className={`inline-flex items-center justify-between h-9 px-1.5 rounded-lg cursor-text transition-colors ${
+                                isTwoSlots
+                                  ? 'w-[72px] sm:w-24'
+                                  : 'w-[104px] sm:w-32'
+                              } ${
                                 hasVal
-                                  ? 'bg-white border-blue-600 ring-2 ring-blue-500/15 shadow-2xs'
-                                  : 'bg-slate-50 border-slate-200 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
+                                  ? 'bg-blue-50/60'
+                                  : 'hover:bg-slate-100/70 focus-within:bg-blue-50/60'
                               }`}
                             >
                               <input
@@ -948,10 +958,14 @@ export default function App() {
                                 onKeyDown={handleValueKeyDown}
                                 placeholder="0"
                                 aria-label={`${item.name} kolom ${sIdx + 1}`}
-                                className="flex-1 min-w-0 w-full text-center text-lg font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
+                                className="flex-1 min-w-0 w-full text-center text-[14px] sm:text-[15px] font-extrabold text-slate-900 bg-transparent border-0 outline-none tabular-nums placeholder:text-slate-300"
                               />
                               {slot.u.trim() !== '' && (
-                                <span className="ml-1 px-2 py-0.5 rounded-lg bg-slate-200/85 text-sm font-extrabold text-slate-800 select-none whitespace-nowrap shrink-0">
+                                <span
+                                  className={`ml-1 text-[11.5px] sm:text-xs font-extrabold select-none whitespace-nowrap shrink-0 ${
+                                    hasVal ? 'text-blue-700' : 'text-slate-500'
+                                  }`}
+                                >
                                   {slot.u}
                                 </span>
                               )}
@@ -970,25 +984,27 @@ export default function App() {
                           setOpenMenuId((prev) => (prev === item.id ? null : item.id));
                         }}
                         aria-label="Menu opsi barang"
-                        className={`w-8 h-9 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
+                        className={`w-7 h-8 sm:w-7.5 sm:h-8.5 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                           isMenuOpen
-                            ? 'bg-slate-200 text-slate-900'
+                            ? 'bg-blue-100 text-blue-700'
                             : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                         }`}
                       >
                         <MoreVertical className="w-4 h-4" />
                       </button>
 
-                      {/* Floating Popover when 3-dots clicked */}
+                      {/* Floating Popover when 3-dots clicked (Always on top!) */}
                       <AnimatePresence>
                         {isMenuOpen && (
                           <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: -4 }}
+                            initial={{ opacity: 0, scale: 0.92, y: openUpwards ? 4 : -4 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: -4 }}
+                            exit={{ opacity: 0, scale: 0.92, y: openUpwards ? 4 : -4 }}
                             transition={{ duration: 0.14 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="absolute right-0 top-10 z-50 w-36 bg-white border border-slate-200 rounded-xl shadow-xl py-1 overflow-hidden"
+                            className={`absolute right-0 ${
+                              openUpwards ? 'bottom-9' : 'top-9'
+                            } z-50 w-36 bg-white border border-slate-200 rounded-xl shadow-2xl py-1 overflow-hidden`}
                           >
                             <button
                               type="button"
@@ -996,7 +1012,7 @@ export default function App() {
                                 setOpenMenuId(null);
                                 setEditingItemId(item.id);
                               }}
-                              className="w-full px-3.5 py-2 text-left text-xs font-extrabold text-slate-800 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2 cursor-pointer"
+                              className="w-full px-3.5 py-2.5 text-left text-xs font-extrabold text-slate-800 hover:bg-blue-50 hover:text-blue-700 active:bg-blue-100 flex items-center gap-2 cursor-pointer"
                             >
                               <Pencil className="w-3.5 h-3.5 text-blue-600" />
                               <span>Edit</span>
@@ -1007,7 +1023,7 @@ export default function App() {
                                 setOpenMenuId(null);
                                 handleDeleteItem(item, index);
                               }}
-                              className="w-full px-3.5 py-2 text-left text-xs font-extrabold text-rose-600 hover:bg-rose-50 flex items-center gap-2 border-t border-slate-100 cursor-pointer"
+                              className="w-full px-3.5 py-2.5 text-left text-xs font-extrabold text-rose-600 hover:bg-rose-50 active:bg-rose-100 flex items-center gap-2 border-t border-slate-100 cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                               <span>Hapus</span>

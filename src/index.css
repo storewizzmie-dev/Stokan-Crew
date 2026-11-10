@@ -36,12 +36,16 @@
     box-shadow 0.28s var(--ease-out),
     border-color 0.25s ease,
     background-color 0.25s ease;
-  will-change: translate, scale;
+}
+
+.list-row-item.menu-open {
+  z-index: 35 !important;
 }
 
 .list-row-item.is-holding {
   scale: 0.985;
   background-color: #eff6ff !important;
+  will-change: translate, scale;
 }
 
 .list-row-item.is-dragging {
@@ -55,6 +59,7 @@
   transition:
     scale 0.28s var(--spring),
     box-shadow 0.28s var(--ease-out) !important;
+  will-change: translate, scale;
 }
 
 .list-row-item.is-dropping {
@@ -63,6 +68,7 @@
     translate 0.34s var(--spring),
     scale 0.28s var(--ease-out),
     box-shadow 0.28s var(--ease-out) !important;
+  will-change: translate, scale;
 }
 
 .no-drag-anim .list-row-item {
