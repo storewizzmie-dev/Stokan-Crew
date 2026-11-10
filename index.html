@@ -33,7 +33,7 @@
       .sf-wrap { max-width: 672px; margin: 0 auto; padding: 0 14px; }
       .sf-header {
         position: sticky; top: 0; z-index: 30;
-        background: rgba(255,255,255,0.92);
+        background: rgba(255,255,255,0.94);
         -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
         border-bottom: 1px solid rgba(226,232,240,0.9);
         padding: 10px 0;
@@ -41,9 +41,9 @@
       .sf-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
       .sf-title-box { display: flex; align-items: center; gap: 8px; }
       .sf-title { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
-      .sf-badge { font-size: 12px; font-weight: 700; color: #64748b; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
+      .sf-badge { font-size: 12px; font-weight: 800; color: #475569; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
       .sf-badge.bump { transform: scale(1.22); color: #059669; }
-      .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 500; color: #94a3b8; }
+      .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
       .sf-actions { display: flex; align-items: center; gap: 8px; }
       .sf-btn {
         border: 0; outline: 0; font: inherit; cursor: pointer;
@@ -53,16 +53,12 @@
       }
       .sf-btn:active { transform: scale(0.93); }
       .sf-btn-reset {
-        height: 36px; padding: 0 12px; background: #fff; color: #475569;
+        height: 36px; padding: 0 12px; background: #fff; color: #334155;
         border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
       }
       .sf-btn-edit {
         height: 36px; padding: 0 16px; background: #0f172a; color: #fff;
         box-shadow: 0 2px 6px rgba(15,23,42,0.12);
-      }
-      .sf-btn-edit.active {
-        background: linear-gradient(135deg, #2563eb, #4f46e5);
-        box-shadow: 0 4px 14px rgba(37,99,235,0.28);
       }
       .sf-prog { margin-top: 8px; height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
       .sf-prog-bar {
@@ -78,26 +74,27 @@
       }
       .sf-row {
         display: flex; align-items: center; justify-content: space-between; gap: 8px;
-        padding: 6px 12px; border-bottom: 1px solid #f1f5f9;
+        padding: 8px 12px; border-bottom: 1px solid #f1f5f9;
         transition: background 0.2s;
       }
       .sf-row:last-child { border-bottom: 0; }
       .sf-row.filled { background: rgba(236,253,245,0.45); }
-      .sf-row-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-      .sf-num { width: 20px; font-size: 12px; font-weight: 700; color: #94a3b8; font-variant-numeric: tabular-nums; flex-shrink: 0; }
-      .sf-row.filled .sf-num { color: #059669; }
-      .sf-name-txt { font-size: 14px; font-weight: 700; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .sf-row.filled .sf-name-txt { color: #0f172a; }
-      .sf-chk {
-        width: 16px; height: 16px; border-radius: 50%; background: #10b981; color: #fff;
+      .sf-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+      .sf-num {
+        width: 24px; height: 24px; border-radius: 8px;
+        background: #f1f5f9; color: #64748b;
+        font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
         display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-        transform: scale(0); transition: transform 0.35s var(--spring);
+        transition: background 0.2s, color 0.2s;
       }
-      .sf-row.filled .sf-chk { transform: scale(1); }
+      .sf-row.filled .sf-num { background: #059669; color: #fff; }
+      .sf-name-txt { font-size: 14px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .sf-row.filled .sf-name-txt { color: #0f172a; }
       .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
-      .sf-plus-sep { font-size: 12px; font-weight: 800; color: #cbd5e1; }
+      .sf-plus-sep { font-size: 12px; font-weight: 800; color: #94a3b8; }
       .sf-input-box {
-        display: inline-flex; align-items: center; height: 32px; padding: 0 10px;
+        display: inline-flex; align-items: center; height: 36px; width: 118px;
+        padding: 0 6px 0 8px;
         border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0;
         transition: all 0.15s;
       }
@@ -108,17 +105,21 @@
         background: #fff; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.14);
       }
       .sf-val-inp {
-        width: 46px; border: 0; outline: 0; background: transparent;
-        text-align: right; font: inherit; font-size: 14px; font-weight: 800; color: #0f172a;
+        flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent;
+        text-align: center; font: inherit; font-size: 14px; font-weight: 800; color: #0f172a;
         font-variant-numeric: tabular-nums;
       }
       .sf-val-inp::placeholder { color: #cbd5e1; }
-      .sf-unit-lbl { margin-left: 6px; font-size: 12px; font-weight: 700; color: #94a3b8; user-select: none; }
+      .sf-unit-lbl {
+        margin-left: 4px; padding: 2px 6px; border-radius: 6px;
+        background: rgba(226,232,240,0.8); color: #334155;
+        font-size: 11px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
+      }
       /* Edit Mode */
       .sf-edit-banner {
-        margin: 12px 0; padding: 14px; border-radius: 16px;
+        margin: 12px 0; padding: 12px 14px; border-radius: 16px;
         background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff;
-        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        font-size: 12px; line-height: 1.45;
         box-shadow: 0 6px 20px rgba(37,99,235,0.18);
       }
       .sf-edit-list { display: flex; flex-direction: column; gap: 10px; }
@@ -138,11 +139,10 @@
         z-index: 35 !important;
         transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
       }
-      .sf-no-anim .sf-edit-card { transition: none !important; }
       .sf-edit-top { display: flex; align-items: center; gap: 10px; }
       .sf-grip {
         height: 40px; padding: 0 10px; border-radius: 12px;
-        background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569;
+        background: #f1f5f9; border: 1px solid #e2e8f0; color: #334155;
         display: inline-flex; align-items: center; gap: 4px;
         cursor: grab; user-select: none; touch-action: none; flex-shrink: 0;
         font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
@@ -161,24 +161,24 @@
       }
       .sf-edit-units {
         margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9;
-        display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+        display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
       }
       .sf-unit-chip {
-        display: inline-flex; align-items: center; height: 30px;
-        border-radius: 12px; background: #f1f5f9; border: 1px solid #e2e8f0; overflow: hidden;
+        display: inline-flex; align-items: center; height: 32px;
+        border-radius: 12px; background: #f1f5f9; border: 1px solid #cbd5e1; overflow: hidden;
       }
       .sf-unit-chip-btn {
-        border: 0; background: transparent; height: 100%; padding: 0 10px;
-        font: inherit; font-size: 12px; font-weight: 800; color: #1e293b; cursor: pointer;
+        border: 0; background: transparent; height: 100%; padding: 0 12px;
+        font: inherit; font-size: 12px; font-weight: 800; color: #0f172a; cursor: pointer;
       }
       .sf-unit-chip-rm {
-        border: 0; border-left: 1px solid #e2e8f0; background: transparent;
-        height: 100%; padding: 0 6px; color: #64748b; cursor: pointer; font-weight: 800;
+        border: 0; border-left: 1px solid #cbd5e1; background: transparent;
+        height: 100%; padding: 0 8px; color: #475569; cursor: pointer; font-weight: 800;
       }
       .sf-unit-chip-rm:hover { background: #ffe4e6; color: #e11d48; }
       .sf-add-unit-btn {
-        height: 30px; padding: 0 12px; border-radius: 12px;
-        background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb;
+        height: 32px; padding: 0 12px; border-radius: 12px;
+        background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;
         font: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
       }
       /* Dock */
@@ -212,10 +212,10 @@
       }
       @keyframes sfFadeIn { from { opacity: 0; } to { opacity: 1; } }
       @keyframes sfPopIn { from { opacity: 0; transform: scale(0.88) translateY(16px); } to { opacity: 1; transform: none; } }
-      .sf-unit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0; }
+      .sf-unit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
       .sf-unit-pick {
-        height: 48px; border-radius: 16px; border: 2px solid #dbeafe;
-        background: #eff6ff; color: #1d4ed8; font: inherit; font-size: 14px; font-weight: 800;
+        height: 48px; border-radius: 16px; border: 2px solid #e2e8f0;
+        background: #f8fafc; color: #0f172a; font: inherit; font-size: 14px; font-weight: 800;
         cursor: pointer; transition: transform 0.15s var(--spring), background 0.15s, color 0.15s;
       }
       .sf-unit-pick:hover, .sf-unit-pick:active { background: #2563eb; border-color: #2563eb; color: #fff; transform: scale(0.96); }
@@ -234,34 +234,45 @@
         if (window.__VITE_ACTIVE__ || window.__STANDALONE_MOUNTED__) return;
         window.__STANDALONE_MOUNTED__ = true;
 
-        var LS_KEY = 'sisa-fisik:v1';
-        var PRIMARY_UNITS = ['pack', 'pcs', 'porsi', 'kg', 'gram'];
-        var EXTRA_UNITS = ['btl', 'lembar', 'liter', 'ml', 'dus', 'box', 'sachet', 'ikat'];
+        var LS_KEY = 'sisa-fisik:v2';
+        var ALLOWED_UNITS = ['Pack', 'Porsi', 'Pcs', 'Kg', 'Gram', 'Botol'];
+        var normUnit = function (u) {
+          var c = String(u || '').trim().toLowerCase();
+          if (c === 'pack' || c === 'pak') return 'Pack';
+          if (c === 'porsi') return 'Porsi';
+          if (c === 'pcs' || c === 'lembar' || c === 'buah') return 'Pcs';
+          if (c === 'kg' || c === 'kilo') return 'Kg';
+          if (c === 'gram' || c === 'gr' || c === 'g') return 'Gram';
+          if (c === 'botol' || c === 'btl') return 'Botol';
+          return 'Pack';
+        };
         var uid = function () { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); };
         var mk = function (name) {
-          var units = Array.prototype.slice.call(arguments, 1);
-          return { id: uid(), name: name, slots: units.map(function (u) { return { v: '', u: u }; }) };
+          var units = Array.prototype.slice.call(arguments, 1, 3);
+          return { id: uid(), name: name, slots: units.map(function (u) { return { v: '', u: normUnit(u) }; }) };
         };
         var getDefaults = function () {
           return [
-            mk('Karage', 'pack'), mk('Sayap', 'pack', 'porsi'), mk('Ayam filet', 'porsi'),
-            mk('Ayam kecil', 'pack', 'porsi'), mk('Ayam besar', 'pack', 'porsi'), mk('Ebi', 'pcs'),
-            mk('Timun', ''), mk('Crabstik', ''), mk('Koslow', ''), mk('Selada', ''),
-            mk('Saos Black paper', ''), mk('Saos teriyaki', ''), mk('Saos Asam manis', 'btl', ''),
-            mk('Saos pedas', ''), mk('Cuka', ''), mk('Kwipie', 'pack', ''), mk('Mestro', ''),
-            mk('Mentai', ''), mk('Wijen', ''), mk('Minyak', ''), mk('Tobiko', ''),
-            mk('Ricepaper', 'lembar'), mk('Mika', 'pcs'), mk('Cup(35)', 'pcs'),
-            mk('Sambal horeg', '', ''), mk('Nasi', 'kg', 'kg', 'kg'), mk('Nori', 'pack', 'lembar'),
-            mk('Klip besar', 'pack', 'pcs'), mk('Klip sedang', 'pack', 'pcs'),
-            mk('Klip kecil', 'pcs'), mk('Tepung wfc', 'pack')
+            mk('Karage', 'Pack'), mk('Sayap', 'Pack', 'Porsi'), mk('Ayam filet', 'Porsi'),
+            mk('Ayam kecil', 'Pack', 'Porsi'), mk('Ayam besar', 'Pack', 'Porsi'), mk('Ebi', 'Pcs'),
+            mk('Timun', 'Pcs'), mk('Crabstik', 'Pack'), mk('Koslow', 'Porsi'), mk('Selada', 'Kg'),
+            mk('Saos Black paper', 'Pack'), mk('Saos teriyaki', 'Pack'), mk('Saos Asam manis', 'Botol'),
+            mk('Saos pedas', 'Pack'), mk('Cuka', 'Botol'), mk('Kwipie', 'Pack'), mk('Mestro', 'Pack'),
+            mk('Mentai', 'Pack'), mk('Wijen', 'Pack'), mk('Minyak', 'Pack'), mk('Tobiko', 'Pack'),
+            mk('Ricepaper', 'Pcs'), mk('Mika', 'Pcs'), mk('Cup(35)', 'Pcs'),
+            mk('Sambal horeg', 'Porsi'), mk('Nasi', 'Kg', 'Porsi'), mk('Nori', 'Pack', 'Pcs'),
+            mk('Klip besar', 'Pack', 'Pcs'), mk('Klip sedang', 'Pack', 'Pcs'),
+            mk('Klip kecil', 'Pcs'), mk('Tepung wfc', 'Pack')
           ];
         };
-        var todayKey = function () {
-          var d = new Date();
+        var toDateVal = function (d) {
+          d = d || new Date();
           return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
         };
-        var fullDate = function () {
-          return new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        var formatDateId = function (ymd) {
+          var p = String(ymd || toDateVal()).split('-');
+          var dt = new Date(Number(p[0]), Number(p[1] || 1) - 1, Number(p[2] || 1));
+          return dt.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
         };
         var isFilled = function (it) {
           return it.slots.some(function (s) { return s.v.trim() !== ''; });
@@ -269,7 +280,7 @@
 
         var items = getDefaults();
         try {
-          var raw = localStorage.getItem(LS_KEY);
+          var raw = localStorage.getItem(LS_KEY) || localStorage.getItem('sisa-fisik:v1');
           if (raw) {
             var p = JSON.parse(raw);
             if (p && Array.isArray(p.items)) {
@@ -277,12 +288,12 @@
                 return {
                   id: String(i.id || uid()),
                   name: String(i.name || 'Barang'),
-                  slots: (Array.isArray(i.slots) && i.slots.length ? i.slots : [{ v: '', u: '' }]).map(function (s) {
-                    return { v: String((s && s.v) || ''), u: String((s && s.u) || '') };
+                  slots: (Array.isArray(i.slots) && i.slots.length ? i.slots : [{ v: '', u: 'Pack' }]).slice(0, 2).map(function (s) {
+                    return { v: String((s && s.v) || ''), u: normUnit((s && s.u) || 'Pack') };
                   })
                 };
               });
-              if (p.day && p.day !== todayKey()) {
+              if (p.day && p.day !== toDateVal()) {
                 items.forEach(function (it) { it.slots.forEach(function (s) { s.v = ''; }); });
               }
             }
@@ -290,19 +301,20 @@
         } catch (e) {}
 
         var save = function () {
-          try { localStorage.setItem(LS_KEY, JSON.stringify({ items: items, theme: 'light', day: todayKey() })); } catch (e) {}
+          try { localStorage.setItem(LS_KEY, JSON.stringify({ items: items, theme: 'light', day: toDateVal() })); } catch (e) {}
         };
 
         var isEdit = false;
         var root = document.getElementById('root');
 
-        var buildReport = function () {
-          var head = '*Sisa Fisik* – ' + fullDate();
+        // Format: "Sayap = 5 Pack + 2 Porsi"
+        var buildReport = function (dateStr) {
+          var head = '*Sisa Fisik* – ' + formatDateId(dateStr || toDateVal());
           var lines = items.map(function (it) {
             var parts = it.slots.filter(function (s) { return s.v.trim() !== ''; }).map(function (s) {
               return s.v.trim() + (s.u.trim() ? ' ' + s.u.trim() : '');
             });
-            return (it.name.trim() || 'Barang') + ' ' + (parts.length ? parts.join(' + ') : '-');
+            return (it.name.trim() || 'Barang') + ' = ' + (parts.length ? parts.join(' + ') : '-');
           });
           return head + '\n\n' + lines.join('\n');
         };
@@ -331,42 +343,66 @@
           card.className = 'sf-modal-card';
           card.innerHTML =
             '<div style="display:flex;justify-content:space-between;align-items:center">' +
-            '<div><h3 style="margin:0;font-size:16px;font-weight:800">' + (mode === 'add' ? 'Pilih Satuan Kolom Baru' : 'Ganti Satuan') + '</h3>' +
+            '<div><h3 style="margin:0;font-size:16px;font-weight:800">' + (mode === 'add' ? 'Pilih Satuan Kolom ke-2' : 'Pilih Satuan') + '</h3>' +
             '<p style="margin:2px 0 0;font-size:12px;color:#64748b">Barang: <b style="color:#0f172a">' + item.name + '</b></p></div>' +
             '<button class="sf-close" style="border:0;background:#f1f5f9;width:32px;height:32px;border-radius:10px;cursor:pointer;font-weight:800">✕</button></div>' +
-            '<div class="sf-unit-grid"></div>' +
-            '<div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;margin-bottom:6px">Satuan Lainnya</div>' +
-            '<div class="sf-extra-units" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px"></div>';
+            '<div class="sf-unit-grid"></div>';
           var grid = card.querySelector('.sf-unit-grid');
           var pick = function (u) {
-            if (mode === 'add') item.slots.push({ v: '', u: u });
-            else item.slots[slotIndex].u = u;
+            if (mode === 'add') {
+              if (item.slots.length < 2) item.slots.push({ v: '', u: u });
+            } else {
+              item.slots[slotIndex].u = u;
+            }
             save(); bd.remove(); render();
           };
-          PRIMARY_UNITS.forEach(function (u) {
+          ALLOWED_UNITS.forEach(function (u) {
             var b = document.createElement('button');
             b.className = 'sf-unit-pick';
             b.textContent = u;
             b.onclick = function () { pick(u); };
             grid.appendChild(b);
           });
-          var noneBtn = document.createElement('button');
-          noneBtn.className = 'sf-unit-pick';
-          noneBtn.style.cssText = 'background:#f1f5f9;border-color:#e2e8f0;color:#475569;font-size:12px';
-          noneBtn.textContent = 'Tanpa Satuan';
-          noneBtn.onclick = function () { pick(''); };
-          grid.appendChild(noneBtn);
+          card.querySelector('.sf-close').onclick = function () { bd.remove(); };
+          bd.onclick = function (e) { if (e.target === bd) bd.remove(); };
+          bd.appendChild(card);
+          document.body.appendChild(bd);
+        };
 
-          var extraBox = card.querySelector('.sf-extra-units');
-          EXTRA_UNITS.forEach(function (u) {
-            var b = document.createElement('button');
-            b.style.cssText = 'padding:6px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#f8fafc;font:inherit;font-size:12px;font-weight:700;cursor:pointer';
-            b.textContent = u;
-            b.onclick = function () { pick(u); };
-            extraBox.appendChild(b);
-          });
+        var openDatePopupAndSend = function () {
+          var chosenDate = toDateVal();
+          var bd = document.createElement('div');
+          bd.className = 'sf-modal-backdrop';
+          var card = document.createElement('div');
+          card.className = 'sf-modal-card';
+          card.innerHTML =
+            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+            '<h3 style="margin:0;font-size:16px;font-weight:800">Pilih Tanggal Laporan</h3>' +
+            '<button class="sf-close" style="border:0;background:#f1f5f9;width:32px;height:32px;border-radius:10px;cursor:pointer;font-weight:800">✕</button></div>' +
+            '<label style="display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:6px">Tanggal Laporan:</label>' +
+            '<input id="sf-date-inp" type="date" value="' + chosenDate + '" style="width:100%;height:42px;padding:0 12px;border-radius:12px;border:1px solid #cbd5e1;font:inherit;font-size:14px;font-weight:800;margin-bottom:12px">' +
+            '<div id="sf-date-prev" style="padding:10px 12px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;font-size:12px;font-weight:800;color:#1e293b;margin-bottom:16px"></div>' +
+            '<div style="display:flex;gap:8px">' +
+            '<button type="button" class="sf-cancel" style="height:42px;padding:0 16px;border-radius:12px;border:1px solid #e2e8f0;background:#f1f5f9;font:inherit;font-weight:700;cursor:pointer">Batal</button>' +
+            '<button type="button" class="sf-send-now" style="flex:1;height:42px;border-radius:12px;border:0;background:linear-gradient(135deg,#059669,#0d9488);color:#fff;font:inherit;font-weight:800;cursor:pointer">Kirim ke WhatsApp</button></div>';
+
+          var inp = card.querySelector('#sf-date-inp');
+          var prev = card.querySelector('#sf-date-prev');
+          var upd = function () {
+            chosenDate = inp.value || toDateVal();
+            prev.textContent = '*Sisa Fisik* – ' + formatDateId(chosenDate);
+          };
+          inp.onchange = upd;
+          upd();
 
           card.querySelector('.sf-close').onclick = function () { bd.remove(); };
+          card.querySelector('.sf-cancel').onclick = function () { bd.remove(); };
+          card.querySelector('.sf-send-now').onclick = function () {
+            var msg = buildReport(chosenDate);
+            try { navigator.clipboard.writeText(msg); } catch (e) {}
+            bd.remove();
+            window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+          };
           bd.onclick = function (e) { if (e.target === bd) bd.remove(); };
           bd.appendChild(card);
           document.body.appendChild(bd);
@@ -375,27 +411,27 @@
         var openAddItemModal = function () {
           var bd = document.createElement('div');
           bd.className = 'sf-modal-backdrop';
-          var selectedUnit = 'pack';
+          var selectedUnit = 'Pack';
           var card = document.createElement('div');
           card.className = 'sf-modal-card';
           card.innerHTML =
             '<h3 style="margin:0 0 12px;font-size:16px;font-weight:800">Tambah Barang Baru</h3>' +
             '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px">Nama Barang</label>' +
             '<input id="sf-new-name" type="text" placeholder="Contoh: Saos Tomat" style="width:100%;height:40px;padding:0 12px;border-radius:12px;border:1px solid #cbd5e1;font:inherit;font-size:14px;font-weight:700;margin-bottom:12px">' +
-            '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">Pilih Satuan Awal</label>' +
-            '<div class="sf-u-choices" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px"></div>' +
+            '<label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">Pilih Satuan</label>' +
+            '<div class="sf-u-choices" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px"></div>' +
             '<div style="display:flex;gap:8px">' +
             '<button type="button" class="sf-cancel" style="flex:1;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#f1f5f9;font:inherit;font-weight:700;cursor:pointer">Batal</button>' +
             '<button type="button" class="sf-save" style="flex:1;height:40px;border-radius:12px;border:0;background:#2563eb;color:#fff;font:inherit;font-weight:800;cursor:pointer">Simpan</button></div>';
           var uBox = card.querySelector('.sf-u-choices');
           var renderChoices = function () {
             uBox.innerHTML = '';
-            PRIMARY_UNITS.concat(['']).forEach(function (u) {
+            ALLOWED_UNITS.forEach(function (u) {
               var b = document.createElement('button');
               b.type = 'button';
               var act = selectedUnit === u;
-              b.style.cssText = 'padding:6px 12px;border-radius:10px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid ' + (act ? '#2563eb' : '#e2e8f0') + ';background:' + (act ? '#2563eb' : '#fff') + ';color:' + (act ? '#fff' : '#334155');
-              b.textContent = u || 'Tanpa Satuan';
+              b.style.cssText = 'height:36px;border-radius:10px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;border:1px solid ' + (act ? '#2563eb' : '#e2e8f0') + ';background:' + (act ? '#2563eb' : '#fff') + ';color:' + (act ? '#fff' : '#1e293b');
+              b.textContent = u;
               b.onclick = function () { selectedUnit = u; renderChoices(); };
               uBox.appendChild(b);
             });
@@ -443,21 +479,24 @@
             '<div class="sf-head-row">' +
             '<div><div class="sf-title-box"><h1 class="sf-title">Sisa Fisik</h1>' +
             '<span class="sf-badge" id="sf-stat-badge">' + done + '/' + tot + ' terisi</span></div>' +
-            '<p class="sf-date">' + fullDate() + '</p></div>' +
-            '<div class="sf-actions">' +
-            (!isEdit ? '<button class="sf-btn sf-btn-reset" id="sf-reset-btn">Reset</button>' : '') +
-            '<button class="sf-btn sf-btn-edit ' + (isEdit ? 'active' : '') + '" id="sf-edit-btn">' + (isEdit ? '✓ Selesai Edit' : '✎ Edit') + '</button>' +
-            '</div></div>' +
+            '<p class="sf-date">' + formatDateId(toDateVal()) + '</p></div>' +
+            (!isEdit
+              ? '<div class="sf-actions">' +
+                '<button class="sf-btn sf-btn-reset" id="sf-reset-btn">Reset</button>' +
+                '<button class="sf-btn sf-btn-edit" id="sf-edit-btn">✎ Edit</button>' +
+                '</div>'
+              : '') +
+            '</div>' +
             '<div class="sf-prog"><div class="sf-prog-bar" id="sf-prog-bar" style="width:' + pct + '%"></div></div>' +
             '</div></header>' +
             '<main class="sf-wrap" id="sf-main"></main>' +
             '<div class="sf-dock"><div class="sf-dock-inner" id="sf-dock-inner"></div></div>' +
             '</div>';
 
-          document.getElementById('sf-edit-btn').onclick = function () {
-            isEdit = !isEdit;
-            render();
-          };
+          var editBtn = document.getElementById('sf-edit-btn');
+          if (editBtn) {
+            editBtn.onclick = function () { isEdit = true; render(); };
+          }
           var resetBtn = document.getElementById('sf-reset-btn');
           if (resetBtn) {
             resetBtn.onclick = function () {
@@ -476,9 +515,8 @@
               row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
               row.innerHTML =
                 '<div class="sf-row-left">' +
-                '<span class="sf-num">' + (idx + 1) + '.</span>' +
-                '<span class="sf-name-txt"></span>' +
-                '<span class="sf-chk">✓</span></div>' +
+                '<span class="sf-num">' + (idx + 1) + '</span>' +
+                '<span class="sf-name-txt"></span></div>' +
                 '<div class="sf-slots"></div>';
               row.querySelector('.sf-name-txt').textContent = item.name;
               var slotsBox = row.querySelector('.sf-slots');
@@ -523,11 +561,8 @@
           } else {
             var banner = document.createElement('div');
             banner.className = 'sf-edit-banner';
-            banner.innerHTML =
-              '<div style="font-size:12px;line-height:1.4"><b>Mode Pengaturan Barang:</b><br>Tahan & geser tombol nomor di kiri untuk ubah urutan, atau klik <b>+ Tambah Satuan</b>.</div>' +
-              '<button class="sf-btn" id="sf-top-add" style="height:36px;padding:0 12px;background:#fff;color:#2563eb;flex-shrink:0">+ Barang Baru</button>';
+            banner.innerHTML = '<b>Mode Edit Aktif:</b> Tahan & geser tombol nomor di kiri untuk ubah urutan, ketuk nama barang untuk mengubahnya, atau atur satuan (maksimal 2 kolom satuan).';
             main.appendChild(banner);
-            banner.querySelector('#sf-top-add').onclick = openAddItemModal;
 
             var listEl = document.createElement('div');
             listEl.className = 'sf-edit-list';
@@ -554,7 +589,7 @@
                 chip.className = 'sf-unit-chip';
                 var cBtn = document.createElement('button');
                 cBtn.className = 'sf-unit-chip-btn';
-                cBtn.textContent = '#' + (sIdx + 1) + ' ' + (slot.u.trim() || 'Tanpa satuan');
+                cBtn.textContent = 'Kolom ' + (sIdx + 1) + ': ' + (slot.u.trim() || 'Pack');
                 cBtn.onclick = function () { openUnitPopup(item, 'edit', sIdx); };
                 chip.appendChild(cBtn);
                 if (item.slots.length > 1) {
@@ -566,13 +601,14 @@
                 }
                 uRow.appendChild(chip);
               });
-              var addU = document.createElement('button');
-              addU.className = 'sf-add-unit-btn';
-              addU.textContent = '+ Tambah Satuan';
-              addU.onclick = function () { openUnitPopup(item, 'add'); };
-              uRow.appendChild(addU);
+              if (item.slots.length < 2) {
+                var addU = document.createElement('button');
+                addU.className = 'sf-add-unit-btn';
+                addU.textContent = '+ Tambah Satuan';
+                addU.onclick = function () { openUnitPopup(item, 'add'); };
+                uRow.appendChild(addU);
+              }
 
-              // Hold-to-drag on grip
               var grip = ec.querySelector('.sf-grip');
               grip.onpointerdown = function (e) {
                 if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -653,8 +689,8 @@
           var dock = document.getElementById('sf-dock-inner');
           if (isEdit) {
             dock.innerHTML =
-              '<button class="sf-btn" id="sf-dock-add" style="flex:1;height:44px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px">+ Tambah Barang Baru</button>' +
-              '<button class="sf-btn" id="sf-dock-done" style="height:44px;padding:0 20px;border-radius:14px;background:#0f172a;color:#fff;font-size:14px">✓ Selesai</button>';
+              '<button class="sf-btn" id="sf-dock-add" style="flex:1;height:44px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px">+ Tambah Barang</button>' +
+              '<button class="sf-btn" id="sf-dock-done" style="height:44px;padding:0 22px;border-radius:14px;background:#0f172a;color:#fff;font-size:14px">✓ Selesai</button>';
             document.getElementById('sf-dock-add').onclick = openAddItemModal;
             document.getElementById('sf-dock-done').onclick = function () { isEdit = false; render(); };
           } else {
@@ -662,13 +698,9 @@
               '<button class="sf-btn sf-btn-sec" id="sf-copy-btn">Salin</button>' +
               '<button class="sf-btn sf-btn-wa" id="sf-wa-btn"><span>Kirim ke WhatsApp</span><span id="sf-wa-count" style="font-size:12px;background:rgba(0,0,0,0.16);padding:2px 8px;border-radius:8px">' + done + '/' + tot + '</span></button>';
             document.getElementById('sf-copy-btn').onclick = function () {
-              try { navigator.clipboard.writeText(buildReport()); showToast('Teks laporan berhasil disalin!'); } catch (e) {}
+              try { navigator.clipboard.writeText(buildReport(toDateVal())); showToast('Teks laporan berhasil disalin!'); } catch (e) {}
             };
-            document.getElementById('sf-wa-btn').onclick = function () {
-              var msg = buildReport();
-              try { navigator.clipboard.writeText(msg); } catch (e) {}
-              window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-            };
+            document.getElementById('sf-wa-btn').onclick = openDatePopupAndSend;
           }
         };
 

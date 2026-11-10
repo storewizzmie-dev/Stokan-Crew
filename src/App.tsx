@@ -17,7 +17,7 @@ import {
   GripVertical,
   AlertCircle,
   Eye,
-  Sparkles,
+  Calendar,
   Layers,
 } from 'lucide-react';
 
@@ -32,55 +32,65 @@ interface Item {
   slots: Slot[];
 }
 
-const LS_KEY = 'sisa-fisik:v1';
+const LS_KEY = 'sisa-fisik:v2';
+
+const ALLOWED_UNITS = ['Pack', 'Porsi', 'Pcs', 'Kg', 'Gram', 'Botol'] as const;
+
+const normalizeUnit = (u: string): string => {
+  const clean = u.trim().toLowerCase();
+  if (!clean) return '';
+  if (clean === 'pack' || clean === 'pak') return 'Pack';
+  if (clean === 'porsi') return 'Porsi';
+  if (clean === 'pcs' || clean === 'lembar' || clean === 'buah') return 'Pcs';
+  if (clean === 'kg' || clean === 'kilo') return 'Kg';
+  if (clean === 'gram' || clean === 'gr' || clean === 'g') return 'Gram';
+  if (clean === 'botol' || clean === 'btl') return 'Botol';
+  return 'Pcs';
+};
 
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 
 const mk = (name: string, ...units: string[]): Item => ({
   id: uid(),
   name,
-  slots: units.map((u) => ({ v: '', u })),
+  slots: units.slice(0, 2).map((u) => ({ v: '', u: normalizeUnit(u) })),
 });
 
 const getDefaultItems = (): Item[] => [
-  mk('Karage', 'pack'),
-  mk('Sayap', 'pack', 'porsi'),
-  mk('Ayam filet', 'porsi'),
-  mk('Ayam kecil', 'pack', 'porsi'),
-  mk('Ayam besar', 'pack', 'porsi'),
-  mk('Ebi', 'pcs'),
-  mk('Timun', ''),
-  mk('Crabstik', ''),
-  mk('Koslow', ''),
-  mk('Selada', ''),
-  mk('Saos Black paper', ''),
-  mk('Saos teriyaki', ''),
-  mk('Saos Asam manis', 'btl', ''),
-  mk('Saos pedas', ''),
-  mk('Cuka', ''),
-  mk('Kwipie', 'pack', ''),
-  mk('Mestro', ''),
-  mk('Mentai', ''),
-  mk('Wijen', ''),
-  mk('Minyak', ''),
-  mk('Tobiko', ''),
-  mk('Ricepaper', 'lembar'),
-  mk('Mika', 'pcs'),
-  mk('Cup(35)', 'pcs'),
-  mk('Sambal horeg', '', ''),
-  mk('Nasi', 'kg', 'kg', 'kg'),
-  mk('Nori', 'pack', 'lembar'),
-  mk('Klip besar', 'pack', 'pcs'),
-  mk('Klip sedang', 'pack', 'pcs'),
-  mk('Klip kecil', 'pcs'),
-  mk('Tepung wfc', 'pack'),
+  mk('Karage', 'Pack'),
+  mk('Sayap', 'Pack', 'Porsi'),
+  mk('Ayam filet', 'Porsi'),
+  mk('Ayam kecil', 'Pack', 'Porsi'),
+  mk('Ayam besar', 'Pack', 'Porsi'),
+  mk('Ebi', 'Pcs'),
+  mk('Timun', 'Pcs'),
+  mk('Crabstik', 'Pack'),
+  mk('Koslow', 'Porsi'),
+  mk('Selada', 'Kg'),
+  mk('Saos Black paper', 'Pack'),
+  mk('Saos teriyaki', 'Pack'),
+  mk('Saos Asam manis', 'Botol'),
+  mk('Saos pedas', 'Pack'),
+  mk('Cuka', 'Botol'),
+  mk('Kwipie', 'Pack'),
+  mk('Mestro', 'Pack'),
+  mk('Mentai', 'Pack'),
+  mk('Wijen', 'Pack'),
+  mk('Minyak', 'Pack'),
+  mk('Tobiko', 'Pack'),
+  mk('Ricepaper', 'Pcs'),
+  mk('Mika', 'Pcs'),
+  mk('Cup(35)', 'Pcs'),
+  mk('Sambal horeg', 'Porsi'),
+  mk('Nasi', 'Kg', 'Porsi'),
+  mk('Nori', 'Pack', 'Pcs'),
+  mk('Klip besar', 'Pack', 'Pcs'),
+  mk('Klip sedang', 'Pack', 'Pcs'),
+  mk('Klip kecil', 'Pcs'),
+  mk('Tepung wfc', 'Pack'),
 ];
 
-const PRIMARY_UNITS = ['pack', 'pcs', 'porsi', 'kg', 'gram'];
-const EXTRA_UNITS = ['btl', 'lembar', 'liter', 'ml', 'dus', 'box', 'sachet', 'ikat'];
-
-const todayKey = () => {
-  const d = new Date();
+const toDateInputValue = (d = new Date()) => {
   return (
     d.getFullYear() +
     '-' +
@@ -90,20 +100,24 @@ const todayKey = () => {
   );
 };
 
-const fullDate = () =>
-  new Date().toLocaleDateString('id-ID', {
+const formatDateId = (yyyyMmDd: string) => {
+  if (!yyyyMmDd) return '';
+  const [y, m, d] = yyyyMmDd.split('-').map(Number);
+  const dateObj = new Date(y, (m || 1) - 1, d || 1);
+  return dateObj.toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
   });
+};
 
 const isItemFilled = (item: Item) => item.slots.some((s) => s.v.trim() !== '');
 
 export default function App() {
   const [items, setItems] = useState<Item[]>(() => {
     try {
-      const raw = localStorage.getItem(LS_KEY);
+      const raw = localStorage.getItem(LS_KEY) || localStorage.getItem('sisa-fisik:v1');
       if (!raw) return getDefaultItems();
       const parsed = JSON.parse(raw);
       if (!parsed || !Array.isArray(parsed.items)) return getDefaultItems();
@@ -112,15 +126,15 @@ export default function App() {
         .map((i: Record<string, unknown>) => ({
           id: String(i.id || uid()),
           name: String(i.name || 'Barang'),
-          slots: (Array.isArray(i.slots) && i.slots.length ? i.slots : [{ v: '', u: '' }]).map(
-            (s: Record<string, unknown>) => ({
+          slots: (Array.isArray(i.slots) && i.slots.length ? i.slots : [{ v: '', u: 'Pack' }])
+            .slice(0, 2)
+            .map((s: Record<string, unknown>) => ({
               v: String((s && s.v) || ''),
-              u: String((s && s.u) || ''),
-            })
-          ),
+              u: normalizeUnit(String((s && s.u) || 'Pack')),
+            })),
         }));
 
-      const currentDay = todayKey();
+      const currentDay = toDateInputValue();
       if (parsed.day && parsed.day !== currentDay) {
         return loadedItems.map((it) => ({
           ...it,
@@ -135,7 +149,7 @@ export default function App() {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Unit Picker Popup State
+  // Unit Picker Popup State (Strictly 6 units: Pack, Porsi, Pcs, Kg, Gram, Botol)
   const [unitPopup, setUnitPopup] = useState<{
     itemId: string;
     itemName: string;
@@ -143,12 +157,15 @@ export default function App() {
     slotIndex?: number;
     currentUnit?: string;
   } | null>(null);
-  const [customUnitText, setCustomUnitText] = useState('');
 
   // Add New Item Modal State
   const [showAddModal, setShowAddModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newUnits, setNewUnits] = useState<string[]>(['pack']);
+  const [newUnits, setNewUnits] = useState<string[]>(['Pack']);
+
+  // Date Picker Popup before sending to WhatsApp
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string>(() => toDateInputValue());
 
   // Preview & Confirm Modals
   const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -207,7 +224,7 @@ export default function App() {
         JSON.stringify({
           items,
           theme: 'light',
-          day: todayKey(),
+          day: toDateInputValue(),
         })
       );
     } catch {
@@ -248,7 +265,7 @@ export default function App() {
     }
   };
 
-  // Edit Mode: Item Name & Slots
+  // Edit Mode: Item Name & Slots (Max 2 slots)
   const handleNameChange = (itemId: string, name: string) => {
     setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, name } : it)));
   };
@@ -267,6 +284,7 @@ export default function App() {
       prev.map((it) => {
         if (it.id !== itemId) return it;
         if (mode === 'add') {
+          if (it.slots.length >= 2) return it;
           return {
             ...it,
             slots: [...it.slots, { v: '', u: selectedUnit }],
@@ -284,7 +302,6 @@ export default function App() {
     );
 
     setUnitPopup(null);
-    setCustomUnitText('');
   };
 
   const handleRemoveSlot = (itemId: string, slotIndex: number) => {
@@ -312,7 +329,7 @@ export default function App() {
     const trimmedName = newName.trim();
     if (!trimmedName) return;
 
-    const cleanUnits = newUnits.length > 0 ? newUnits : [''];
+    const cleanUnits = (newUnits.length > 0 ? newUnits : ['Pack']).slice(0, 2);
     const newItem: Item = {
       id: uid(),
       name: trimmedName,
@@ -322,7 +339,7 @@ export default function App() {
     setItems((prev) => [...prev, newItem]);
     setShowAddModal(false);
     setNewName('');
-    setNewUnits(['pack']);
+    setNewUnits(['Pack']);
     setHighlightedId(newItem.id);
     showToast(`"${trimmedName}" berhasil ditambahkan`);
 
@@ -334,7 +351,7 @@ export default function App() {
   };
 
   /* ============================================================================
-   * 120FPS ZERO-DELAY HOLD & DRAG ENGINE (Direct DOM Transform + Spring Physics)
+   * 120FPS ZERO-DELAY HOLD & DRAG ENGINE
    * ============================================================================ */
   const updateDragPosition = () => {
     const d = dragRef.current;
@@ -346,7 +363,6 @@ export default function App() {
     const maxDy = d.tops[last] + d.hs[last] - (d.tops[d.from] + d.hs[d.from]);
     const dy = Math.max(minDy, Math.min(maxDy, rawDy));
 
-    // Direct 1:1 hardware-accelerated translate with zero lag
     d.el.style.translate = `0 ${dy}px`;
 
     const draggedCenter = d.tops[d.from] + d.hs[d.from] / 2 + dy;
@@ -408,10 +424,8 @@ export default function App() {
     const startY = e.clientY;
     const pid = e.pointerId;
 
-    // Visual feedback immediately when pressing
     cardEl.classList.add('is-holding');
 
-    // Hold for 150ms to lift and start dragging ("harus di tahan")
     holdTimerRef.current = setTimeout(() => {
       holdTimerRef.current = null;
       const els = Array.from(listEl.children) as HTMLElement[];
@@ -461,10 +475,7 @@ export default function App() {
   };
 
   const handleGripPointerMove = (e: React.PointerEvent<HTMLElement>) => {
-    // If not yet activated (still within 150ms hold window), cancel if user scrolls away
-    if (!dragRef.current) {
-      return;
-    }
+    if (!dragRef.current) return;
     e.preventDefault();
     dragRef.current.clientY = e.clientY;
     updateDragPosition();
@@ -542,7 +553,7 @@ export default function App() {
     setConfirmDialog({
       title: 'Kosongkan Semua Angka?',
       message:
-        'Semua angka stok yang sudah diisi hari ini akan dikosongkan. Daftar barang dan satuan tetap tersimpan.',
+        'Semua angka stok yang sudah diisi akan dikosongkan. Daftar barang dan satuan tetap tersimpan.',
       confirmLabel: 'Ya, Kosongkan',
       cancelLabel: 'Batal',
       danger: true,
@@ -559,16 +570,16 @@ export default function App() {
     });
   };
 
-  // Format report & Send to WhatsApp
+  // Format report: "Sayap = 5 Pack + 2 Porsi"
   const formatItemLine = (it: Item) => {
     const parts = it.slots
       .filter((s) => s.v.trim() !== '')
       .map((s) => s.v.trim() + (s.u.trim() ? ' ' + s.u.trim() : ''));
-    return (it.name.trim() || 'Barang') + ' ' + (parts.length ? parts.join(' + ') : '-');
+    return `${it.name.trim() || 'Barang'} = ${parts.length ? parts.join(' + ') : '-'}`;
   };
 
-  const buildReportMessage = () => {
-    const head = `*Sisa Fisik* – ${fullDate()}`;
+  const buildReportMessage = (dateStr = selectedDate) => {
+    const head = `*Sisa Fisik* – ${formatDateId(dateStr)}`;
     return `${head}\n\n` + items.map(formatItemLine).join('\n');
   };
 
@@ -598,14 +609,28 @@ export default function App() {
     }
   };
 
-  const openWhatsAppNow = () => {
-    const msg = buildReportMessage();
+  // Triggered when user clicks "Kirim ke WhatsApp" in bottom dock -> Opens Date Selection Popup
+  const handleClickSendDock = () => {
+    if (items.length === 0) {
+      showToast('Daftar barang masih kosong');
+      return;
+    }
+    setSelectedDate(toDateInputValue());
+    setShowDateModal(true);
+  };
+
+  // Triggered inside the Date Selection Popup when user confirms sending
+  const handleConfirmSendFromDatePopup = () => {
+    const msg = buildReportMessage(selectedDate);
     const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
     try {
       navigator.clipboard.writeText(msg);
     } catch {
       // ignore
     }
+    setShowDateModal(false);
+    launchConfetti();
+
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';
@@ -615,37 +640,8 @@ export default function App() {
     a.remove();
   };
 
-  const handleSendWhatsApp = () => {
-    if (items.length === 0) {
-      showToast('Daftar barang masih kosong');
-      return;
-    }
-    const missing = items.filter((i) => !isItemFilled(i));
-    if (missing.length > 0) {
-      const sampleNames =
-        missing
-          .slice(0, 5)
-          .map((i) => i.name)
-          .join(', ') + (missing.length > 5 ? `, dan ${missing.length - 5} lainnya` : '');
-
-      setConfirmDialog({
-        title: `Masih ada ${missing.length} barang belum diisi`,
-        message: `Belum diisi: ${sampleNames}. Barang yang kosong akan otomatis ditulis "-" di laporan WhatsApp.`,
-        confirmLabel: 'Tetap Kirim ke WA',
-        cancelLabel: 'Isi Dulu',
-        onConfirm: () => {
-          setConfirmDialog(null);
-          openWhatsAppNow();
-        },
-      });
-      return;
-    }
-    launchConfetti();
-    openWhatsAppNow();
-  };
-
   const handleCopyReport = async () => {
-    const msg = buildReportMessage();
+    const msg = buildReportMessage(selectedDate);
     try {
       await navigator.clipboard.writeText(msg);
       showToast('Teks laporan berhasil disalin!');
@@ -657,7 +653,7 @@ export default function App() {
   return (
     <div className="min-h-dvh bg-[#f4f6fb] text-slate-900 pb-26">
       {/* Top Sticky Header */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-2xs">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-2xs">
         <div className="max-w-2xl mx-auto px-3.5 py-2.5">
           <div className="flex items-center justify-between gap-2">
             {/* Brand Title & Date */}
@@ -669,54 +665,43 @@ export default function App() {
                 <motion.span
                   key={filledCount}
                   initial={{ scale: 1.25, color: '#059669' }}
-                  animate={{ scale: 1, color: '#64748b' }}
+                  animate={{ scale: 1, color: '#475569' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                  className="text-xs font-bold text-slate-500 tabular-nums shrink-0"
+                  className="text-xs font-extrabold text-slate-600 tabular-nums shrink-0"
                 >
                   {filledCount}/{totalCount} terisi
                 </motion.span>
               </div>
-              <p className="text-xs font-medium text-slate-400 truncate">{fullDate()}</p>
+              <p className="text-xs font-semibold text-slate-500 truncate">
+                {formatDateId(toDateInputValue())}
+              </p>
             </div>
 
-            {/* Right Controls: Reset & Edit */}
-            <div className="flex items-center gap-2 shrink-0">
-              {!isEditMode && (
+            {/* Right Controls: Only visible in Normal Mode (In Edit Mode, Selesai is ONLY at the bottom) */}
+            {!isEditMode && (
+              <div className="flex items-center gap-2 shrink-0">
                 <motion.button
                   whileTap={{ scale: 0.92 }}
                   type="button"
                   onClick={handleClearValues}
                   title="Kosongkan angka"
-                  className="h-9 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  className="h-9 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
                 >
                   <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
                   <span>Reset</span>
                 </motion.button>
-              )}
 
-              <motion.button
-                whileTap={{ scale: 0.92 }}
-                type="button"
-                onClick={() => setIsEditMode((prev) => !prev)}
-                className={`h-9 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
-                  isEditMode
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25'
-                    : 'bg-slate-900 hover:bg-slate-800 text-white shadow-sm'
-                }`}
-              >
-                {isEditMode ? (
-                  <>
-                    <Check className="w-4 h-4 stroke-[2.75]" />
-                    <span>Selesai Edit</span>
-                  </>
-                ) : (
-                  <>
-                    <Pencil className="w-3.5 h-3.5" />
-                    <span>Edit</span>
-                  </>
-                )}
-              </motion.button>
-            </div>
+                <motion.button
+                  whileTap={{ scale: 0.92 }}
+                  type="button"
+                  onClick={() => setIsEditMode(true)}
+                  className="h-9 px-4 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  <Pencil className="w-3.5 h-3.5" />
+                  <span>Edit</span>
+                </motion.button>
+              </div>
+            )}
           </div>
 
           {/* Animated Progress Bar */}
@@ -763,7 +748,7 @@ export default function App() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.22 }}
-            className="bg-white border border-slate-200/90 rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-xs"
+            className="bg-white border border-slate-200 rounded-2xl divide-y divide-slate-100 overflow-hidden shadow-xs"
           >
             {items.map((item, index) => {
               const filled = isItemFilled(item);
@@ -773,7 +758,7 @@ export default function App() {
                 <div
                   key={item.id}
                   id={`item-row-${item.id}`}
-                  className={`relative flex items-center justify-between gap-2 px-3 py-1.5 transition-colors duration-200 ${
+                  className={`relative flex items-center justify-between gap-2 px-3 py-2 transition-colors duration-200 ${
                     isHighlighted
                       ? 'bg-blue-50'
                       : filled
@@ -781,51 +766,40 @@ export default function App() {
                       : 'hover:bg-slate-50/70'
                   }`}
                 >
-                  {/* Left: Number + Item Name + Animated Checkmark */}
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                  {/* Left: Clean Number Badge (morphs cleanly when filled) + Item Name */}
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
                     <span
-                      className={`w-5 text-xs font-bold tabular-nums shrink-0 transition-colors ${
-                        filled ? 'text-emerald-600' : 'text-slate-400'
+                      className={`w-6 h-6 rounded-lg text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 ${
+                        filled
+                          ? 'bg-emerald-600 text-white shadow-2xs'
+                          : 'bg-slate-100 text-slate-500'
                       }`}
                     >
-                      {index + 1}.
+                      {index + 1}
                     </span>
                     <span
                       className={`text-sm font-bold truncate transition-colors ${
-                        filled ? 'text-slate-900' : 'text-slate-700'
+                        filled ? 'text-slate-900' : 'text-slate-800'
                       }`}
                     >
                       {item.name}
                     </span>
-                    <AnimatePresence>
-                      {filled && (
-                        <motion.span
-                          initial={{ scale: 0, rotate: -45 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          exit={{ scale: 0 }}
-                          transition={{ type: 'spring', stiffness: 520, damping: 18 }}
-                          className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-2xs"
-                        >
-                          <Check className="w-2.5 h-2.5 stroke-[3.5]" />
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
                   </div>
 
-                  {/* Right: Compact Quantity Inputs */}
+                  {/* Right: Compact Quantity Inputs (Number centered in column, Unit at far right) */}
                   <div className="flex flex-wrap items-center justify-end gap-1.5 shrink-0">
                     {item.slots.map((slot, sIdx) => {
                       const hasVal = slot.v.trim() !== '';
                       return (
                         <React.Fragment key={sIdx}>
                           {sIdx > 0 && (
-                            <span className="text-xs font-extrabold text-slate-300">+</span>
+                            <span className="text-xs font-extrabold text-slate-400">+</span>
                           )}
                           <label
-                            className={`inline-flex items-center h-8 rounded-xl border px-2.5 transition-all duration-150 ${
+                            className={`inline-flex items-center h-9 w-28 sm:w-32 rounded-xl border pl-2 pr-1.5 transition-all duration-150 ${
                               hasVal
                                 ? 'bg-white border-emerald-500 ring-2 ring-emerald-500/15 shadow-2xs'
-                                : 'bg-slate-50/90 border-slate-200/90 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
+                                : 'bg-slate-50 border-slate-200 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
                             }`}
                           >
                             <input
@@ -840,10 +814,10 @@ export default function App() {
                               onKeyDown={handleValueKeyDown}
                               placeholder="0"
                               aria-label={`${item.name} kolom ${sIdx + 1}`}
-                              className="w-11 sm:w-12 text-right text-sm font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
+                              className="flex-1 min-w-0 w-full text-center text-sm font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
                             />
                             {slot.u.trim() !== '' && (
-                              <span className="ml-1.5 text-xs font-bold text-slate-400 select-none whitespace-nowrap">
+                              <span className="ml-1 px-1.5 py-0.5 rounded-md bg-slate-200/75 text-[11px] font-extrabold text-slate-700 select-none whitespace-nowrap shrink-0">
                                 {slot.u}
                               </span>
                             )}
@@ -857,42 +831,23 @@ export default function App() {
             })}
           </motion.div>
         ) : (
-          /* ==================== MODE EDIT: PREMIUM FLOATING CARDS + 120FPS HOLD-DRAG ==================== */
+          /* ==================== MODE EDIT: FLOATING CARDS + 120FPS HOLD-DRAG ==================== */
           <motion.div
             key="edit-list"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Sleek Edit Studio Header Card */}
-            <div className="mb-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-3.5 text-white shadow-md shadow-blue-600/15 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-blue-100">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Mode Pengaturan Barang</span>
-                </div>
-                <p className="text-xs text-white/90 mt-0.5 leading-relaxed">
-                  <strong>Tahan & geser</strong> tombol nomor di kiri untuk ubah urutan, ketuk nama
-                  untuk ubah nama, atau atur satuan di bawahnya.
-                </p>
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.94 }}
-                type="button"
-                onClick={() => {
-                  setNewName('');
-                  setNewUnits(['pack']);
-                  setShowAddModal(true);
-                }}
-                className="h-9 px-3.5 rounded-xl bg-white text-blue-700 font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-sm cursor-pointer"
-              >
-                <Plus className="w-4 h-4 stroke-[2.75]" />
-                <span>Barang Baru</span>
-              </motion.button>
+            {/* Info Banner (No duplicate Tambah Barang button here) */}
+            <div className="mb-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white shadow-md shadow-blue-600/15">
+              <p className="text-xs text-white/95 leading-relaxed font-medium">
+                <strong>Mode Edit Aktif:</strong> Tahan & geser tombol nomor di kiri untuk ubah
+                posisi urutan, ketuk nama barang untuk mengubahnya, atau atur satuan (maksimal 2
+                kolom satuan per barang).
+              </p>
             </div>
 
-            {/* Floating Tactile Cards Container (120fps Direct DOM Drag) */}
+            {/* Floating Tactile Cards Container */}
             <div ref={editListRef} className="flex flex-col gap-2.5">
               {items.map((item, index) => {
                 const isHighlighted = highlightedId === item.id;
@@ -902,12 +857,13 @@ export default function App() {
                     key={item.id}
                     id={`item-row-${item.id}`}
                     className={`edit-item-card group rounded-2xl bg-white border p-3 shadow-xs ${
-                      isHighlighted ? 'border-blue-400 ring-2 ring-blue-400/20' : 'border-slate-200/90'
+                      isHighlighted
+                        ? 'border-blue-400 ring-2 ring-blue-400/20'
+                        : 'border-slate-200/90'
                     }`}
                   >
                     {/* Top Row: Hold-to-Drag Handle + Seamless Name Input + Delete Button */}
                     <div className="flex items-center gap-2.5">
-                      {/* Tactile Hold-to-Drag Pill */}
                       <div
                         onPointerDown={handleGripPointerDown}
                         onPointerMove={handleGripPointerMove}
@@ -915,15 +871,14 @@ export default function App() {
                         onPointerCancel={finishDrag}
                         onContextMenu={(e) => e.preventDefault()}
                         title="Tahan sebentar lalu geser ke atas/bawah"
-                        className="grip-wiggle h-10 px-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 active:bg-blue-600 active:text-white border border-slate-200/80 hover:border-blue-300 text-slate-600 hover:text-blue-700 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0"
+                        className="grip-wiggle h-10 px-2.5 rounded-xl bg-slate-100 hover:bg-blue-50 active:bg-blue-600 active:text-white border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 flex items-center gap-1 select-none touch-none cursor-grab active:cursor-grabbing transition-colors shrink-0"
                       >
-                        <GripVertical className="w-4 h-4 opacity-70" />
+                        <GripVertical className="w-4 h-4 opacity-75" />
                         <span className="text-xs font-extrabold tabular-nums min-w-[18px] text-center">
                           {index + 1}
                         </span>
                       </div>
 
-                      {/* Modern Seamless Editable Name Field */}
                       <div className="relative flex-1 min-w-0">
                         <input
                           type="text"
@@ -932,12 +887,11 @@ export default function App() {
                           onBlur={(e) => handleNameBlur(item.id, e.target.value)}
                           placeholder="Nama barang..."
                           aria-label="Nama barang"
-                          className="w-full h-10 pl-3 pr-8 rounded-xl bg-slate-50/80 hover:bg-slate-100/70 focus:bg-white border border-slate-200/80 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/15 text-sm font-extrabold text-slate-900 outline-none transition-all"
+                          className="w-full h-10 pl-3 pr-8 rounded-xl bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/15 text-sm font-extrabold text-slate-900 outline-none transition-all"
                         />
                         <Pencil className="w-3.5 h-3.5 text-slate-400 pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" />
                       </div>
 
-                      {/* Sleek Coral Delete Button */}
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.9 }}
@@ -950,78 +904,75 @@ export default function App() {
                       </motion.button>
                     </div>
 
-                    {/* Bottom Row: Interactive Unit Chips + "+ Satuan" Trigger */}
-                    <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-1.5">
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 mr-1">
-                        <Layers className="w-3 h-3" />
+                    {/* Bottom Row: Interactive Unit Chips (Max 2 columns) */}
+                    <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600">
+                        <Layers className="w-3.5 h-3.5 text-slate-500" />
                         <span>Satuan:</span>
                       </span>
 
-                      {item.slots.map((slot, sIdx) => {
-                        const hasUnit = slot.u.trim() !== '';
-                        return (
-                          <motion.div
-                            layout
-                            key={sIdx}
-                            initial={{ scale: 0.85, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="inline-flex items-center h-7.5 rounded-xl bg-slate-100/90 hover:bg-slate-200/70 border border-slate-200/90 overflow-hidden transition-colors"
+                      {item.slots.map((slot, sIdx) => (
+                        <motion.div
+                          layout
+                          key={sIdx}
+                          initial={{ scale: 0.85, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          className="inline-flex items-center h-8 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-300 overflow-hidden transition-colors"
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setUnitPopup({
+                                itemId: item.id,
+                                itemName: item.name,
+                                mode: 'edit',
+                                slotIndex: sIdx,
+                                currentUnit: slot.u,
+                              })
+                            }
+                            title="Klik untuk ganti satuan"
+                            className="h-full px-3 text-xs font-extrabold text-slate-800 flex items-center gap-1.5 cursor-pointer"
                           >
+                            <span className="text-[11px] font-bold text-slate-500 tabular-nums">
+                              Kolom {sIdx + 1}:
+                            </span>
+                            <span className="text-blue-700 font-extrabold">
+                              {slot.u || 'Pilih'}
+                            </span>
+                          </button>
+
+                          {item.slots.length > 1 && (
                             <button
                               type="button"
-                              onClick={() => {
-                                setCustomUnitText(slot.u);
-                                setUnitPopup({
-                                  itemId: item.id,
-                                  itemName: item.name,
-                                  mode: 'edit',
-                                  slotIndex: sIdx,
-                                  currentUnit: slot.u,
-                                });
-                              }}
-                              title="Klik untuk ganti satuan"
-                              className="h-full px-2.5 text-xs font-extrabold flex items-center gap-1.5 cursor-pointer"
+                              onClick={() => handleRemoveSlot(item.id, sIdx)}
+                              title="Hapus kolom satuan ini"
+                              className="h-full px-2 hover:bg-rose-100 text-slate-500 hover:text-rose-600 border-l border-slate-300 flex items-center justify-center cursor-pointer transition-colors"
                             >
-                              <span className="text-[10px] font-bold text-slate-400 tabular-nums">
-                                #{sIdx + 1}
-                              </span>
-                              <span className={hasUnit ? 'text-slate-800' : 'text-slate-400 italic'}>
-                                {hasUnit ? slot.u : 'Tanpa satuan'}
-                              </span>
+                              <X className="w-3.5 h-3.5" />
                             </button>
+                          )}
+                        </motion.div>
+                      ))}
 
-                            {item.slots.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveSlot(item.id, sIdx)}
-                                title="Hapus kolom satuan ini"
-                                className="h-full px-1.5 hover:bg-rose-100 text-slate-400 hover:text-rose-600 border-l border-slate-200/90 flex items-center justify-center cursor-pointer transition-colors"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </motion.div>
-                        );
-                      })}
-
-                      {/* "+ Satuan" Button -> Opens Unit Popup Immediately */}
-                      <motion.button
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.93 }}
-                        type="button"
-                        onClick={() => {
-                          setCustomUnitText('');
-                          setUnitPopup({
-                            itemId: item.id,
-                            itemName: item.name,
-                            mode: 'add',
-                          });
-                        }}
-                        className="h-7.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
-                      >
-                        <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
-                        <span>Tambah Satuan</span>
-                      </motion.button>
+                      {/* Only show "+ Tambah Satuan" if item has fewer than 2 slots */}
+                      {item.slots.length < 2 && (
+                        <motion.button
+                          whileHover={{ scale: 1.03 }}
+                          whileTap={{ scale: 0.93 }}
+                          type="button"
+                          onClick={() =>
+                            setUnitPopup({
+                              itemId: item.id,
+                              itemName: item.name,
+                              mode: 'add',
+                            })
+                          }
+                          className="h-8 px-3 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 hover:border-blue-600 text-xs font-extrabold inline-flex items-center gap-1 cursor-pointer transition-all shadow-2xs"
+                        >
+                          <Plus className="w-3.5 h-3.5 stroke-[2.75]" />
+                          <span>Tambah Satuan</span>
+                        </motion.button>
+                      )}
                     </div>
                   </div>
                 );
@@ -1031,7 +982,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Fixed Bottom Action Bar */}
+      {/* Fixed Bottom Action Bar (Single Tambah Barang & Single Selesai button in Edit Mode) */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-3.5 py-2.5">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
           {isEditMode ? (
@@ -1041,19 +992,19 @@ export default function App() {
                 type="button"
                 onClick={() => {
                   setNewName('');
-                  setNewUnits(['pack']);
+                  setNewUnits(['Pack']);
                   setShowAddModal(true);
                 }}
                 className="flex-1 h-11 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 cursor-pointer"
               >
                 <Plus className="w-4 h-4 stroke-[2.75]" />
-                <span>Tambah Barang Baru</span>
+                <span>Tambah Barang</span>
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="button"
                 onClick={() => setIsEditMode(false)}
-                className="h-11 px-5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
+                className="h-11 px-6 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm flex items-center justify-center gap-1.5 cursor-pointer shrink-0 shadow-sm"
               >
                 <Check className="w-4 h-4 stroke-[2.75]" />
                 <span>Selesai</span>
@@ -1084,7 +1035,7 @@ export default function App() {
               <motion.button
                 whileTap={{ scale: 0.97 }}
                 type="button"
-                onClick={handleSendWhatsApp}
+                onClick={handleClickSendDock}
                 className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 cursor-pointer"
               >
                 <Send className="w-4 h-4" />
@@ -1125,7 +1076,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* POP-UP PILIH SATUAN (pack, pcs, porsi, kg, gram) */}
+      {/* POP-UP PILIH SATUAN (Strictly: Pack, Porsi, Pcs, Kg, Gram, Botol - No Custom Input) */}
       <AnimatePresence>
         {unitPopup && (
           <motion.div
@@ -1143,10 +1094,10 @@ export default function App() {
               onClick={(e) => e.stopPropagation()}
               className="bg-white border border-slate-200 rounded-3xl w-full max-w-sm p-5 shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-3.5">
+              <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-base font-extrabold text-slate-900">
-                    {unitPopup.mode === 'add' ? 'Pilih Satuan Kolom Baru' : 'Ganti Satuan'}
+                    {unitPopup.mode === 'add' ? 'Pilih Satuan Kolom ke-2' : 'Pilih Satuan'}
                   </h2>
                   <p className="text-xs text-slate-500">
                     Barang: <strong className="text-slate-800">{unitPopup.itemName}</strong>
@@ -1161,87 +1112,154 @@ export default function App() {
                 </button>
               </div>
 
-              {/* 5 Main Units Requested: pack, pcs, porsi, kg, gram */}
-              <div className="grid grid-cols-3 gap-2 mb-3.5">
-                {PRIMARY_UNITS.map((u) => {
+              <div className="grid grid-cols-2 gap-2.5">
+                {ALLOWED_UNITS.map((u) => {
                   const isCurrent = unitPopup.mode === 'edit' && unitPopup.currentUnit === u;
                   return (
                     <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.93 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.94 }}
                       key={u}
                       type="button"
                       onClick={() => handleSelectUnitFromPopup(u)}
                       className={`h-12 rounded-2xl border-2 font-extrabold text-sm flex items-center justify-center transition-all cursor-pointer shadow-2xs ${
                         isCurrent
                           ? 'bg-blue-600 border-blue-600 text-white'
-                          : 'border-blue-100 bg-blue-50/70 hover:bg-blue-600 hover:border-blue-600 hover:text-white text-blue-700'
+                          : 'border-slate-200 bg-slate-50 hover:bg-blue-600 hover:border-blue-600 hover:text-white text-slate-800'
                       }`}
                     >
                       {u}
                     </motion.button>
                   );
                 })}
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.93 }}
-                  type="button"
-                  onClick={() => handleSelectUnitFromPopup('')}
-                  className="h-12 rounded-2xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center transition-colors cursor-pointer"
-                >
-                  Tanpa Satuan
-                </motion.button>
               </div>
-
-              {/* Secondary Quick Units */}
-              <div className="mb-3.5">
-                <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
-                  Satuan Lainnya
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {EXTRA_UNITS.map((u) => (
-                    <motion.button
-                      whileTap={{ scale: 0.93 }}
-                      key={u}
-                      type="button"
-                      onClick={() => handleSelectUnitFromPopup(u)}
-                      className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-900 hover:text-white text-slate-700 text-xs font-bold transition-colors cursor-pointer"
-                    >
-                      {u}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Custom Unit Input */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSelectUnitFromPopup(customUnitText.trim());
-                }}
-                className="flex items-center gap-2 pt-2.5 border-t border-slate-100"
-              >
-                <input
-                  type="text"
-                  maxLength={16}
-                  value={customUnitText}
-                  onChange={(e) => setCustomUnitText(e.target.value)}
-                  placeholder="Atau ketik satuan sendiri..."
-                  className="flex-1 h-9 px-3 rounded-xl border border-slate-300 text-xs font-semibold text-slate-900 focus:border-blue-600 outline-none"
-                />
-                <button
-                  type="submit"
-                  className="h-9 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer shrink-0"
-                >
-                  Pakai
-                </button>
-              </form>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Modal: Tambah Barang Baru */}
+      {/* POP-UP PILIH TANGGAL SEBELUM KIRIM KE WHATSAPP */}
+      <AnimatePresence>
+        {showDateModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowDateModal(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 backdrop-blur-xs p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.88, y: 24 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 15 }}
+              transition={{ type: 'spring', stiffness: 450, damping: 28 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white border border-slate-200 rounded-3xl w-full max-w-sm p-5 shadow-2xl"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                    <Calendar className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-extrabold text-slate-900">
+                      Pilih Tanggal Laporan
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      {filledCount} dari {totalCount} barang telah diisi
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowDateModal(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Quick Date Presets */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedDate(toDateInputValue(new Date()))}
+                  className={`flex-1 h-9 rounded-xl text-xs font-extrabold border transition-colors cursor-pointer ${
+                    selectedDate === toDateInputValue(new Date())
+                      ? 'bg-emerald-600 border-emerald-600 text-white'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  Hari Ini
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const yest = new Date();
+                    yest.setDate(yest.getDate() - 1);
+                    setSelectedDate(toDateInputValue(yest));
+                  }}
+                  className={`flex-1 h-9 rounded-xl text-xs font-extrabold border transition-colors cursor-pointer ${
+                    (() => {
+                      const yest = new Date();
+                      yest.setDate(yest.getDate() - 1);
+                      return selectedDate === toDateInputValue(yest);
+                    })()
+                      ? 'bg-emerald-600 border-emerald-600 text-white'
+                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  }`}
+                >
+                  Kemarin
+                </button>
+              </div>
+
+              {/* Calendar Date Input */}
+              <div className="mb-3">
+                <label className="block text-xs font-bold text-slate-600 mb-1">
+                  Atau Pilih Tanggal Kalender:
+                </label>
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white text-sm font-extrabold text-slate-900 focus:border-emerald-600 outline-none"
+                />
+              </div>
+
+              {/* Selected Date Preview Box */}
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
+                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  Format Header Pesan:
+                </div>
+                <div className="text-xs font-extrabold text-slate-800 mt-0.5">
+                  *Sisa Fisik* – {formatDateId(selectedDate)}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowDateModal(false)}
+                  className="h-11 px-4 rounded-xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold cursor-pointer"
+                >
+                  Batal
+                </button>
+                <motion.button
+                  whileTap={{ scale: 0.96 }}
+                  type="button"
+                  onClick={handleConfirmSendFromDatePopup}
+                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-extrabold flex items-center justify-center gap-2 shadow-md shadow-emerald-600/25 cursor-pointer"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Kirim ke WhatsApp</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal: Tambah Barang Baru (Max 2 unit columns, strictly 6 units) */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -1260,10 +1278,7 @@ export default function App() {
               className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-5 shadow-2xl"
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-blue-600" />
-                  <h2 className="text-base font-extrabold text-slate-900">Tambah Barang Baru</h2>
-                </div>
+                <h2 className="text-base font-extrabold text-slate-900">Tambah Barang Baru</h2>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
@@ -1297,26 +1312,28 @@ export default function App() {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-xs font-bold text-slate-700">
-                      Pilih Satuan per Kolom
+                      Pilih Satuan (Maksimal 2 Kolom)
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => setNewUnits((prev) => [...prev, 'pcs'])}
-                      className="text-xs font-bold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Tambah Kolom</span>
-                    </button>
+                    {newUnits.length < 2 && (
+                      <button
+                        type="button"
+                        onClick={() => setNewUnits((prev) => [...prev, 'Porsi'])}
+                        className="text-xs font-extrabold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Tambah Kolom ke-2</span>
+                      </button>
+                    )}
                   </div>
 
-                  <div className="space-y-2.5 max-h-56 overflow-y-auto pr-1">
+                  <div className="space-y-2.5">
                     {newUnits.map((selectedU, idx) => (
                       <div
                         key={idx}
-                        className="p-2.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2"
+                        className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2"
                       >
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-600">
+                          <span className="text-xs font-extrabold text-slate-700">
                             Kolom Satuan #{idx + 1}
                           </span>
                           {newUnits.length > 1 && (
@@ -1332,25 +1349,25 @@ export default function App() {
                             </button>
                           )}
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {[...PRIMARY_UNITS, 'btl', 'lembar', ''].map((unitOpt) => {
+                        <div className="grid grid-cols-3 gap-1.5">
+                          {ALLOWED_UNITS.map((unitOpt) => {
                             const active = selectedU === unitOpt;
                             return (
                               <button
-                                key={unitOpt || 'none'}
+                                key={unitOpt}
                                 type="button"
                                 onClick={() =>
                                   setNewUnits((prev) =>
                                     prev.map((u, i) => (i === idx ? unitOpt : u))
                                   )
                                 }
-                                className={`px-2.5 py-1 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
+                                className={`h-9 rounded-xl text-xs font-extrabold border transition-all cursor-pointer ${
                                   active
                                     ? 'bg-blue-600 border-blue-600 text-white shadow-2xs'
                                     : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
                                 }`}
                               >
-                                {unitOpt || 'Tanpa Satuan'}
+                                {unitOpt}
                               </button>
                             );
                           })}
@@ -1409,8 +1426,8 @@ export default function App() {
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <pre className="flex-1 overflow-y-auto bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">
-                {buildReportMessage()}
+              <pre className="flex-1 overflow-y-auto bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">
+                {buildReportMessage(selectedDate)}
               </pre>
               <div className="flex items-center gap-2 mt-4">
                 <button
@@ -1424,7 +1441,7 @@ export default function App() {
                   type="button"
                   onClick={async () => {
                     try {
-                      await navigator.clipboard.writeText(buildReportMessage());
+                      await navigator.clipboard.writeText(buildReportMessage(selectedDate));
                       showToast('Teks berhasil disalin!');
                       setShowPreviewModal(false);
                     } catch {
