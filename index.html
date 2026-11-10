@@ -10,7 +10,7 @@
     <meta property="og:description" content="Aplikasi pencatatan stok sisa fisik harian dengan pengiriman laporan cepat ke WhatsApp." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310b981'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232563eb'/%3E%3Cpath d='M18 33l9 9 19-20' fill='none' stroke='white' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -26,25 +26,24 @@
         color: #0f172a;
         font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
         min-height: 100dvh;
-        overflow-x: hidden;
         -webkit-font-smoothing: antialiased;
       }
-      .sf-standalone { padding-bottom: 104px; min-height: 100dvh; }
+      .sf-standalone { padding-top: 76px; padding-bottom: 104px; min-height: 100dvh; }
       .sf-wrap { max-width: 672px; margin: 0 auto; padding: 0 14px; }
       .sf-header {
-        position: sticky; top: 0; z-index: 30;
-        background: rgba(255,255,255,0.94);
-        -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(226,232,240,0.9);
+        position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+        background: #ffffff;
+        border-bottom: 1px solid #e2e8f0;
         padding: 10px 0;
+        box-shadow: 0 1px 2px rgba(15,23,42,0.03);
       }
       .sf-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
       .sf-title-box { display: flex; align-items: center; gap: 8px; }
       .sf-title { margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; }
       .sf-badge { font-size: 12px; font-weight: 800; color: #475569; font-variant-numeric: tabular-nums; transition: transform 0.35s var(--spring), color 0.25s; }
-      .sf-badge.bump { transform: scale(1.22); color: #059669; }
+      .sf-badge.bump { transform: scale(1.22); color: #2563eb; }
       .sf-date { margin: 2px 0 0; font-size: 12px; font-weight: 600; color: #64748b; }
-      .sf-actions { display: flex; align-items: center; gap: 8px; }
+      .sf-actions { display: flex; align-items: center; gap: 14px; }
       .sf-btn {
         border: 0; outline: 0; font: inherit; cursor: pointer;
         display: inline-flex; align-items: center; justify-content: center; gap: 6px;
@@ -53,8 +52,8 @@
       }
       .sf-btn:active { transform: scale(0.93); }
       .sf-btn-reset {
-        height: 36px; padding: 0 12px; background: #fff; color: #334155;
-        border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        height: 36px; padding: 0 12px; background: #f8fafc; color: #334155;
+        border: 1px solid #e2e8f0;
       }
       .sf-btn-edit {
         height: 36px; padding: 0 16px; background: #0f172a; color: #fff;
@@ -63,7 +62,7 @@
       .sf-prog { margin-top: 8px; height: 6px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
       .sf-prog-bar {
         height: 100%; width: 0%;
-        background: linear-gradient(90deg, #10b981, #14b8a6, #34d399);
+        background: linear-gradient(90deg, #2563eb, #6366f1, #10b981);
         border-radius: 99px;
         transition: width 0.45s var(--ease);
       }
@@ -78,16 +77,27 @@
         transition: background 0.2s;
       }
       .sf-row:last-child { border-bottom: 0; }
-      .sf-row.filled { background: rgba(236,253,245,0.45); }
+      .sf-row.filled { background: rgba(239,246,255,0.45); }
       .sf-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+      .sf-num-wrap { width: 24px; height: 24px; position: relative; flex-shrink: 0; }
       .sf-num {
-        width: 24px; height: 24px; border-radius: 8px;
+        position: absolute; inset: 0; border-radius: 8px;
         background: #f1f5f9; color: #64748b;
         font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
-        display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-        transition: background 0.2s, color 0.2s;
+        display: flex; align-items: center; justify-content: center;
+        transition: transform 0.25s ease, opacity 0.2s ease;
       }
-      .sf-row.filled .sf-num { background: #059669; color: #fff; }
+      .sf-blue-chk {
+        position: absolute; inset: 0; border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+        transform: scale(0) rotate(-25deg); opacity: 0;
+        transition: transform 0.4s var(--spring), opacity 0.25s ease;
+      }
+      .sf-blue-chk svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+      .sf-row.filled .sf-num { transform: scale(0.5); opacity: 0; }
+      .sf-row.filled .sf-blue-chk { transform: scale(1) rotate(0deg); opacity: 1; }
       .sf-name-txt { font-size: 14px; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .sf-row.filled .sf-name-txt { color: #0f172a; }
       .sf-slots { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px; flex-shrink: 0; }
@@ -102,7 +112,7 @@
         background: #fff; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
       }
       .sf-input-box.has-val {
-        background: #fff; border-color: #10b981; box-shadow: 0 0 0 2px rgba(16,185,129,0.14);
+        background: #fff; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
       }
       .sf-val-inp {
         flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent;
@@ -112,17 +122,11 @@
       .sf-val-inp::placeholder { color: #cbd5e1; }
       .sf-unit-lbl {
         margin-left: 4px; padding: 2px 6px; border-radius: 6px;
-        background: rgba(226,232,240,0.8); color: #334155;
+        background: rgba(226,232,240,0.85); color: #1e293b;
         font-size: 11px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
       }
       /* Edit Mode */
-      .sf-edit-banner {
-        margin: 12px 0; padding: 12px 14px; border-radius: 16px;
-        background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff;
-        font-size: 12px; line-height: 1.45;
-        box-shadow: 0 6px 20px rgba(37,99,235,0.18);
-      }
-      .sf-edit-list { display: flex; flex-direction: column; gap: 10px; }
+      .sf-edit-list { margin-top: 12px; display: flex; flex-direction: column; gap: 10px; }
       .sf-edit-card {
         position: relative; background: #fff; border: 1px solid #e2e8f0;
         border-radius: 16px; padding: 12px; box-shadow: 0 1px 3px rgba(15,23,42,0.04);
@@ -336,6 +340,28 @@
           setTimeout(function () { if (t.parentNode) t.remove(); }, undoFn ? 4500 : 2400);
         };
 
+        var openResetConfirmPopup = function () {
+          var bd = document.createElement('div');
+          bd.className = 'sf-modal-backdrop';
+          var card = document.createElement('div');
+          card.className = 'sf-modal-card';
+          card.innerHTML =
+            '<h3 style="margin:0 0 8px;font-size:16px;font-weight:800;color:#0f172a;line-height:1.35">Apakah anda yakin hapus data angka yang terisi?</h3>' +
+            '<p style="margin:0 0 18px;font-size:12.5px;color:#475569;line-height:1.5">Semua angka stok yang sudah diisi akan dikosongkan kembali menjadi 0. Daftar nama barang dan satuan tetap aman tersimpan.</p>' +
+            '<div style="display:flex;gap:8px">' +
+            '<button type="button" class="sf-cancel" style="flex:1;height:40px;border-radius:12px;border:1px solid #e2e8f0;background:#f1f5f9;color:#334155;font:inherit;font-weight:700;cursor:pointer">Batal</button>' +
+            '<button type="button" class="sf-confirm" style="flex:1;height:40px;border-radius:12px;border:0;background:#e11d48;color:#fff;font:inherit;font-weight:800;cursor:pointer">Ya, Hapus</button></div>';
+          card.querySelector('.sf-cancel').onclick = function () { bd.remove(); };
+          card.querySelector('.sf-confirm').onclick = function () {
+            items.forEach(function (it) { it.slots.forEach(function (s) { s.v = ''; }); });
+            save(); bd.remove(); render();
+            showToast('Data angka berhasil dihapus');
+          };
+          bd.onclick = function (e) { if (e.target === bd) bd.remove(); };
+          bd.appendChild(card);
+          document.body.appendChild(bd);
+        };
+
         var openUnitPopup = function (item, mode, slotIndex) {
           var bd = document.createElement('div');
           bd.className = 'sf-modal-backdrop';
@@ -499,11 +525,7 @@
           }
           var resetBtn = document.getElementById('sf-reset-btn');
           if (resetBtn) {
-            resetBtn.onclick = function () {
-              if (!items.some(isFilled)) { showToast('Semua angka sudah kosong'); return; }
-              items.forEach(function (it) { it.slots.forEach(function (s) { s.v = ''; }); });
-              save(); render(); showToast('Semua angka dikosongkan');
-            };
+            resetBtn.onclick = openResetConfirmPopup;
           }
 
           var main = document.getElementById('sf-main');
@@ -515,7 +537,10 @@
               row.className = 'sf-row' + (isFilled(item) ? ' filled' : '');
               row.innerHTML =
                 '<div class="sf-row-left">' +
+                '<div class="sf-num-wrap">' +
                 '<span class="sf-num">' + (idx + 1) + '</span>' +
+                '<span class="sf-blue-chk"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>' +
+                '</div>' +
                 '<span class="sf-name-txt"></span></div>' +
                 '<div class="sf-slots"></div>';
               row.querySelector('.sf-name-txt').textContent = item.name;
@@ -559,11 +584,6 @@
             });
             main.appendChild(card);
           } else {
-            var banner = document.createElement('div');
-            banner.className = 'sf-edit-banner';
-            banner.innerHTML = '<b>Mode Edit Aktif:</b> Tahan & geser tombol nomor di kiri untuk ubah urutan, ketuk nama barang untuk mengubahnya, atau atur satuan (maksimal 2 kolom satuan).';
-            main.appendChild(banner);
-
             var listEl = document.createElement('div');
             listEl.className = 'sf-edit-list';
             items.forEach(function (item, idx) {

@@ -149,7 +149,7 @@ export default function App() {
 
   const [isEditMode, setIsEditMode] = useState(false);
 
-  // Unit Picker Popup State (Strictly 6 units: Pack, Porsi, Pcs, Kg, Gram, Botol)
+  // Unit Picker Popup State
   const [unitPopup, setUnitPopup] = useState<{
     itemId: string;
     itemName: string;
@@ -544,17 +544,13 @@ export default function App() {
     }, 340);
   };
 
-  // Clear all values
+  // Clear all values: ALWAYS shows confirmation pop-up ("Apakah anda yakin hapus data angka yang terisi?")
   const handleClearValues = () => {
-    if (filledCount === 0) {
-      showToast('Semua isian angka sudah kosong');
-      return;
-    }
     setConfirmDialog({
-      title: 'Kosongkan Semua Angka?',
+      title: 'Apakah anda yakin hapus data angka yang terisi?',
       message:
-        'Semua angka stok yang sudah diisi akan dikosongkan. Daftar barang dan satuan tetap tersimpan.',
-      confirmLabel: 'Ya, Kosongkan',
+        'Semua angka stok yang sudah diisi akan dikosongkan kembali menjadi 0. Daftar nama barang dan satuan tetap aman tersimpan.',
+      confirmLabel: 'Ya, Hapus',
       cancelLabel: 'Batal',
       danger: true,
       onConfirm: () => {
@@ -565,7 +561,7 @@ export default function App() {
           }))
         );
         setConfirmDialog(null);
-        showToast('Semua angka dikosongkan');
+        showToast('Data angka berhasil dihapus');
       },
     });
   };
@@ -609,7 +605,6 @@ export default function App() {
     }
   };
 
-  // Triggered when user clicks "Kirim ke WhatsApp" in bottom dock -> Opens Date Selection Popup
   const handleClickSendDock = () => {
     if (items.length === 0) {
       showToast('Daftar barang masih kosong');
@@ -619,7 +614,6 @@ export default function App() {
     setShowDateModal(true);
   };
 
-  // Triggered inside the Date Selection Popup when user confirms sending
   const handleConfirmSendFromDatePopup = () => {
     const msg = buildReportMessage(selectedDate);
     const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
@@ -651,9 +645,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#f4f6fb] text-slate-900 pb-26">
-      {/* Top Sticky Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b border-slate-200/80 shadow-2xs">
+    <div className="min-h-dvh bg-[#f4f6fb] text-slate-900 pt-[76px] pb-26">
+      {/* FIXED Top Header: Never moves or shifts when scrolling */}
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-slate-200 shadow-2xs">
         <div className="max-w-2xl mx-auto px-3.5 py-2.5">
           <div className="flex items-center justify-between gap-2">
             {/* Brand Title & Date */}
@@ -664,7 +658,7 @@ export default function App() {
                 </h1>
                 <motion.span
                   key={filledCount}
-                  initial={{ scale: 1.25, color: '#059669' }}
+                  initial={{ scale: 1.25, color: '#2563eb' }}
                   animate={{ scale: 1, color: '#475569' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                   className="text-xs font-extrabold text-slate-600 tabular-nums shrink-0"
@@ -677,17 +671,17 @@ export default function App() {
               </p>
             </div>
 
-            {/* Right Controls: Only visible in Normal Mode (In Edit Mode, Selesai is ONLY at the bottom) */}
+            {/* Right Controls: Generous gap-3.5 between Reset & Edit to prevent misclicks */}
             {!isEditMode && (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-3.5 shrink-0">
                 <motion.button
                   whileTap={{ scale: 0.92 }}
                   type="button"
                   onClick={handleClearValues}
                   title="Kosongkan angka"
-                  className="h-9 px-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  className="h-9 px-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <RotateCcw className="w-3.5 h-3.5" />
                   <span>Reset</span>
                 </motion.button>
 
@@ -707,7 +701,7 @@ export default function App() {
           {/* Animated Progress Bar */}
           <div className="mt-2 h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 rounded-full"
+              className="h-full bg-gradient-to-r from-blue-600 via-indigo-500 to-emerald-500 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${progressPercent}%` }}
               transition={{ type: 'spring', stiffness: 140, damping: 22 }}
@@ -762,21 +756,35 @@ export default function App() {
                     isHighlighted
                       ? 'bg-blue-50'
                       : filled
-                      ? 'bg-emerald-50/40'
+                      ? 'bg-blue-50/35'
                       : 'hover:bg-slate-50/70'
                   }`}
                 >
-                  {/* Left: Clean Number Badge (morphs cleanly when filled) + Item Name */}
+                  {/* Left: Number / Animated Blue Checkmark + Item Name */}
                   <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <span
-                      className={`w-6 h-6 rounded-lg text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 ${
-                        filled
-                          ? 'bg-emerald-600 text-white shadow-2xs'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {index + 1}
-                    </span>
+                    {filled ? (
+                      <span
+                        key="checked"
+                        className="blue-check-badge w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs shadow-blue-500/30"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="w-3.5 h-3.5 fill-none stroke-current stroke-[3.2]"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path className="blue-check-path" d="M5 12.5l4.5 4.5L19 7.5" />
+                        </svg>
+                      </span>
+                    ) : (
+                      <span
+                        key="unchecked"
+                        className="w-6 h-6 rounded-lg bg-slate-100 text-slate-500 text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0"
+                      >
+                        {index + 1}
+                      </span>
+                    )}
+
                     <span
                       className={`text-sm font-bold truncate transition-colors ${
                         filled ? 'text-slate-900' : 'text-slate-800'
@@ -798,7 +806,7 @@ export default function App() {
                           <label
                             className={`inline-flex items-center h-9 w-28 sm:w-32 rounded-xl border pl-2 pr-1.5 transition-all duration-150 ${
                               hasVal
-                                ? 'bg-white border-emerald-500 ring-2 ring-emerald-500/15 shadow-2xs'
+                                ? 'bg-white border-blue-500 ring-2 ring-blue-500/15 shadow-2xs'
                                 : 'bg-slate-50 border-slate-200 focus-within:bg-white focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-600/15'
                             }`}
                           >
@@ -817,7 +825,7 @@ export default function App() {
                               className="flex-1 min-w-0 w-full text-center text-sm font-extrabold text-slate-900 bg-transparent outline-none tabular-nums placeholder:text-slate-300"
                             />
                             {slot.u.trim() !== '' && (
-                              <span className="ml-1 px-1.5 py-0.5 rounded-md bg-slate-200/75 text-[11px] font-extrabold text-slate-700 select-none whitespace-nowrap shrink-0">
+                              <span className="ml-1 px-1.5 py-0.5 rounded-md bg-slate-200/85 text-[11px] font-extrabold text-slate-800 select-none whitespace-nowrap shrink-0">
                                 {slot.u}
                               </span>
                             )}
@@ -831,23 +839,13 @@ export default function App() {
             })}
           </motion.div>
         ) : (
-          /* ==================== MODE EDIT: FLOATING CARDS + 120FPS HOLD-DRAG ==================== */
+          /* ==================== MODE EDIT: FLOATING CARDS (No Note Banner) ==================== */
           <motion.div
             key="edit-list"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Info Banner (No duplicate Tambah Barang button here) */}
-            <div className="mb-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white shadow-md shadow-blue-600/15">
-              <p className="text-xs text-white/95 leading-relaxed font-medium">
-                <strong>Mode Edit Aktif:</strong> Tahan & geser tombol nomor di kiri untuk ubah
-                posisi urutan, ketuk nama barang untuk mengubahnya, atau atur satuan (maksimal 2
-                kolom satuan per barang).
-              </p>
-            </div>
-
-            {/* Floating Tactile Cards Container */}
             <div ref={editListRef} className="flex flex-col gap-2.5">
               {items.map((item, index) => {
                 const isHighlighted = highlightedId === item.id;
@@ -954,7 +952,6 @@ export default function App() {
                         </motion.div>
                       ))}
 
-                      {/* Only show "+ Tambah Satuan" if item has fewer than 2 slots */}
                       {item.slots.length < 2 && (
                         <motion.button
                           whileHover={{ scale: 1.03 }}
@@ -982,7 +979,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Fixed Bottom Action Bar (Single Tambah Barang & Single Selesai button in Edit Mode) */}
+      {/* Fixed Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-xl border-t border-slate-200/80 px-3.5 py-2.5">
         <div className="max-w-2xl mx-auto flex items-center gap-2">
           {isEditMode ? (
@@ -1076,7 +1073,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* POP-UP PILIH SATUAN (Strictly: Pack, Porsi, Pcs, Kg, Gram, Botol - No Custom Input) */}
+      {/* POP-UP PILIH SATUAN (Strictly: Pack, Porsi, Pcs, Kg, Gram, Botol) */}
       <AnimatePresence>
         {unitPopup && (
           <motion.div
@@ -1179,7 +1176,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Quick Date Presets */}
               <div className="flex gap-2 mb-3">
                 <button
                   type="button"
@@ -1213,7 +1209,6 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Calendar Date Input */}
               <div className="mb-3">
                 <label className="block text-xs font-bold text-slate-600 mb-1">
                   Atau Pilih Tanggal Kalender:
@@ -1226,7 +1221,6 @@ export default function App() {
                 />
               </div>
 
-              {/* Selected Date Preview Box */}
               <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
                 <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   Format Header Pesan:
@@ -1259,7 +1253,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Modal: Tambah Barang Baru (Max 2 unit columns, strictly 6 units) */}
+      {/* Modal: Tambah Barang Baru */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div
@@ -1459,7 +1453,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Modal: Konfirmasi */}
+      {/* Modal: Konfirmasi Reset */}
       <AnimatePresence>
         {confirmDialog && (
           <motion.div
@@ -1484,10 +1478,10 @@ export default function App() {
                   }`}
                 />
                 <div>
-                  <h2 className="text-base font-extrabold text-slate-900">
+                  <h2 className="text-base font-extrabold text-slate-900 leading-snug">
                     {confirmDialog.title}
                   </h2>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                  <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
                     {confirmDialog.message}
                   </p>
                 </div>
