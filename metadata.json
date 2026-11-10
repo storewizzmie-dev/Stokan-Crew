@@ -1,0 +1,6 @@
+{
+  "name": "Sisa Fisik",
+  "description": "Aplikasi pencatatan stok sisa fisik harian dengan pengiriman laporan cepat ke WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
