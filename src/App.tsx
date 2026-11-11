@@ -901,28 +901,47 @@ export default function App() {
                   } ${
                     isHighlighted
                       ? 'bg-blue-50'
-                      : filled
-                      ? 'bg-blue-50/15'
                       : 'hover:bg-slate-50/70'
                   }`}
                 >
-                  {/* Left: Number Box (Blue Fill + Blue Border & Black Text when filled) + Item Name */}
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span
-                      className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0 transition-all duration-200 text-slate-950 ${
-                        filled
-                          ? 'border-2 border-blue-600 bg-blue-300 shadow-2xs'
-                          : 'border border-slate-300 bg-slate-100'
-                      }`}
-                    >
+                  {/* Left: Neutral Number Box + Item Name + Modern Green-White Checkmark after Name */}
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
+                    <span className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-md text-xs font-extrabold tabular-nums flex items-center justify-center shrink-0 border border-slate-200 bg-slate-100 text-slate-900">
                       {index + 1}
                     </span>
                     <span className="text-[13.5px] sm:text-sm font-bold text-slate-900 leading-tight truncate">
                       {item.name}
                     </span>
+                    <AnimatePresence initial={false}>
+                      {filled && (
+                        <motion.span
+                          key="check-badge"
+                          initial={{ scale: 0, rotate: -25, opacity: 0 }}
+                          animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                          exit={{ scale: 0, opacity: 0 }}
+                          transition={{ type: 'spring', stiffness: 520, damping: 22 }}
+                          className="w-4.5 h-4.5 rounded-full bg-gradient-to-br from-emerald-500 to-green-600 text-white flex items-center justify-center shrink-0 shadow-xs shadow-emerald-500/35 ring-2 ring-emerald-50"
+                          title="Sudah terisi"
+                        >
+                          <svg
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            className="w-2.75 h-2.75"
+                          >
+                            <path
+                              d="M3.5 8.3L6.6 11.4L12.6 4.8"
+                              stroke="currentColor"
+                              strokeWidth="2.4"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  {/* Right: Borderless Quantity Inputs (Wide touch reach, compact width) + 3-Dots Button */}
+                  {/* Right: Borderless Quantity Inputs (+1 size again, black unit text) + 3-Dots Button */}
                   <div className="flex items-center justify-end gap-0.5 sm:gap-1.5 shrink-0">
                     <div className="flex items-center justify-end gap-1 sm:gap-2">
                       {item.slots.map((slot, sIdx) => {
@@ -938,12 +957,12 @@ export default function App() {
                             <label
                               className={`inline-flex items-center justify-between h-9 px-1.5 rounded-lg cursor-text transition-colors ${
                                 isTwoSlots
-                                  ? 'w-[72px] sm:w-24'
-                                  : 'w-[104px] sm:w-32'
+                                  ? 'w-[78px] sm:w-26'
+                                  : 'w-[112px] sm:w-34'
                               } ${
                                 hasVal
-                                  ? 'bg-blue-50/60'
-                                  : 'hover:bg-slate-100/70 focus-within:bg-blue-50/60'
+                                  ? 'bg-slate-100/70'
+                                  : 'hover:bg-slate-100/70 focus-within:bg-slate-100/80'
                               }`}
                             >
                               <input
@@ -958,14 +977,10 @@ export default function App() {
                                 onKeyDown={handleValueKeyDown}
                                 placeholder="0"
                                 aria-label={`${item.name} kolom ${sIdx + 1}`}
-                                className="flex-1 min-w-0 w-full text-center text-[15.5px] sm:text-base font-extrabold text-slate-900 bg-transparent border-0 outline-none tabular-nums placeholder:text-slate-300"
+                                className="flex-1 min-w-0 w-full text-center text-[17px] sm:text-[18px] font-extrabold text-slate-900 bg-transparent border-0 outline-none tabular-nums placeholder:text-slate-300"
                               />
                               {slot.u.trim() !== '' && (
-                                <span
-                                  className={`ml-1 text-[13px] sm:text-sm font-extrabold select-none whitespace-nowrap shrink-0 ${
-                                    hasVal ? 'text-blue-700' : 'text-slate-500'
-                                  }`}
-                                >
+                                <span className="ml-1 text-[14.5px] sm:text-[15.5px] font-extrabold text-slate-900 select-none whitespace-nowrap shrink-0">
                                   {slot.u}
                                 </span>
                               )}

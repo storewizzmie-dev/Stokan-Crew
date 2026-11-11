@@ -79,7 +79,6 @@
       }
       .sf-row:last-child { border-bottom: 0; }
       .sf-row.menu-open { z-index: 35 !important; }
-      .sf-row.filled { background: rgba(239,246,255,0.25); }
       .sf-row.is-holding { scale: 0.985; background: #eff6ff !important; will-change: translate, scale; }
       .sf-row.is-dragging {
         z-index: 45 !important; scale: 1.025; background: #fff !important; border-radius: 16px !important;
@@ -92,50 +91,58 @@
         transition: translate 0.34s var(--spring), scale 0.28s var(--ease), box-shadow 0.28s var(--ease) !important;
         will-change: translate, scale;
       }
-      .sf-row-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+      .sf-row-left { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
       .sf-num {
         width: 24px; height: 24px; border-radius: 6px;
-        background: #f1f5f9; border: 1px solid #cbd5e1; color: #0f172a;
+        background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a;
         font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
         display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
-        transition: border-color 0.2s, background 0.2s;
-      }
-      .sf-row.filled .sf-num {
-        border: 2px solid #2563eb; background: #93c5fd; color: #0f172a;
       }
       .sf-name-txt {
         font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.25;
         white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .sf-check-badge {
+        width: 18px; height: 18px; border-radius: 999px;
+        background: linear-gradient(135deg, #10b981, #16a34a);
+        color: #ffffff;
+        display: none; align-items: center; justify-content: center; flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.35), 0 0 0 2px #ecfdf5;
+        animation: sfCheckPop 0.3s var(--spring);
+      }
+      .sf-row.filled .sf-check-badge { display: inline-flex; }
+      @keyframes sfCheckPop {
+        from { transform: scale(0) rotate(-25deg); opacity: 0; }
+        to { transform: scale(1) rotate(0deg); opacity: 1; }
       }
       .sf-right-box { display: flex; align-items: center; justify-content: flex-end; gap: 2px; flex-shrink: 0; }
       .sf-slots { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
       .sf-plus-sep { font-size: 12px; font-weight: 800; color: #cbd5e1; user-select: none; }
       .sf-input-box {
         display: inline-flex; align-items: center; justify-content: space-between;
-        height: 36px; width: 104px;
+        height: 36px; width: 112px;
         padding: 0 6px; border: 0;
         border-radius: 8px; background: transparent;
         cursor: text; transition: background 0.15s;
       }
-      .sf-input-box.two { width: 72px; }
+      .sf-input-box.two { width: 78px; }
       .sf-input-box:focus-within {
-        background: rgba(239,246,255,0.7);
+        background: rgba(241,245,249,0.85);
       }
       .sf-input-box.has-val {
-        background: rgba(239,246,255,0.6);
+        background: rgba(241,245,249,0.7);
       }
       .sf-val-inp {
         flex: 1; min-width: 0; width: 100%; border: 0; outline: 0; background: transparent;
-        text-align: center; font: inherit; font-size: 15.5px; font-weight: 800; color: #0f172a;
+        text-align: center; font: inherit; font-size: 17px; font-weight: 800; color: #0f172a;
         font-variant-numeric: tabular-nums;
       }
       .sf-val-inp::placeholder { color: #cbd5e1; }
       .sf-unit-lbl {
         margin-left: 4px;
-        color: #64748b;
-        font-size: 13px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
+        color: #0f172a;
+        font-size: 14.5px; font-weight: 800; user-select: none; white-space: nowrap; flex-shrink: 0;
       }
-      .sf-input-box.has-val .sf-unit-lbl { color: #1d4ed8; }
       /* 3-dots button & popover */
       .sf-more-wrap { position: relative; }
       .sf-more-btn {
@@ -685,7 +692,9 @@
             row.innerHTML =
               '<div class="sf-row-left">' +
               '<span class="sf-num">' + (idx + 1) + '</span>' +
-              '<span class="sf-name-txt"></span></div>' +
+              '<span class="sf-name-txt"></span>' +
+              '<span class="sf-check-badge" title="Sudah terisi"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M3.5 8.3L6.6 11.4L12.6 4.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+              '</div>' +
               '<div class="sf-right-box"><div class="sf-slots"></div><div class="sf-more-wrap"></div></div>';
             row.querySelector('.sf-name-txt').textContent = item.name;
             var slotsBox = row.querySelector('.sf-slots');
