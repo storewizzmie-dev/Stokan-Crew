@@ -619,9 +619,6 @@ export default function App() {
     setShowDateModal(true);
   };
 
-  const WA_GROUP_URL =
-    'https://chat.whatsapp.com/JYWpwt77Xc30ATcKuiCWlP?s=cl&p=a&mlu=4&ilr=4&iam=2';
-
   const copyTextGuaranteed = (text: string) => {
     try {
       const ta = document.createElement('textarea');
@@ -647,13 +644,13 @@ export default function App() {
 
   const handleConfirmSendFromDatePopup = () => {
     const msg = buildReportMessage(selectedDate);
+    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
     copyTextGuaranteed(msg);
     setShowDateModal(false);
     launchConfetti();
-    showToast('Teks laporan otomatis disalin! Tinggal Tempel (Paste) di grup.');
 
     const a = document.createElement('a');
-    a.href = WA_GROUP_URL;
+    a.href = url;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     document.body.appendChild(a);
@@ -1252,9 +1249,6 @@ export default function App() {
                 </div>
                 <div className="text-xs font-extrabold text-slate-800 mt-0.5">
                   *Sisa Fisik* – {formatDateId(selectedDate)}
-                </div>
-                <div className="text-[11px] font-semibold text-emerald-700 mt-1.5">
-                  Teks laporan otomatis disalin & langsung membuka Grup WhatsApp.
                 </div>
               </div>
 
