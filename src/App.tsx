@@ -958,11 +958,11 @@ export default function App() {
                                 onKeyDown={handleValueKeyDown}
                                 placeholder="0"
                                 aria-label={`${item.name} kolom ${sIdx + 1}`}
-                                className="flex-1 min-w-0 w-full text-center text-[14px] sm:text-[15px] font-extrabold text-slate-900 bg-transparent border-0 outline-none tabular-nums placeholder:text-slate-300"
+                                className="flex-1 min-w-0 w-full text-center text-[15.5px] sm:text-base font-extrabold text-slate-900 bg-transparent border-0 outline-none tabular-nums placeholder:text-slate-300"
                               />
                               {slot.u.trim() !== '' && (
                                 <span
-                                  className={`ml-1 text-[11.5px] sm:text-xs font-extrabold select-none whitespace-nowrap shrink-0 ${
+                                  className={`ml-1 text-[13px] sm:text-sm font-extrabold select-none whitespace-nowrap shrink-0 ${
                                     hasVal ? 'text-blue-700' : 'text-slate-500'
                                   }`}
                                 >
