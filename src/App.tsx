@@ -135,13 +135,6 @@ export default function App() {
             })),
         }));
 
-      const currentDay = toDateInputValue();
-      if (parsed.day && parsed.day !== currentDay) {
-        return loadedItems.map((it) => ({
-          ...it,
-          slots: it.slots.map((s) => ({ ...s, v: '' })),
-        }));
-      }
       return loadedItems;
     } catch {
       return getDefaultItems();
@@ -626,19 +619,41 @@ export default function App() {
     setShowDateModal(true);
   };
 
-  const handleConfirmSendFromDatePopup = () => {
-    const msg = buildReportMessage(selectedDate);
-    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  const WA_GROUP_URL =
+    'https://chat.whatsapp.com/JYWpwt77Xc30ATcKuiCWlP?s=cl&p=a&mlu=4&ilr=4&iam=2';
+
+  const copyTextGuaranteed = (text: string) => {
     try {
-      navigator.clipboard.writeText(msg);
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.top = '-9999px';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      document.execCommand('copy');
+      ta.remove();
     } catch {
       // ignore
     }
+    try {
+      navigator.clipboard?.writeText(text);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleConfirmSendFromDatePopup = () => {
+    const msg = buildReportMessage(selectedDate);
+    copyTextGuaranteed(msg);
     setShowDateModal(false);
     launchConfetti();
+    showToast('Teks laporan otomatis disalin! Tinggal Tempel (Paste) di grup.');
 
     const a = document.createElement('a');
-    a.href = url;
+    a.href = WA_GROUP_URL;
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     document.body.appendChild(a);
@@ -646,14 +661,10 @@ export default function App() {
     a.remove();
   };
 
-  const handleCopyReport = async () => {
+  const handleCopyReport = () => {
     const msg = buildReportMessage(selectedDate);
-    try {
-      await navigator.clipboard.writeText(msg);
-      showToast('Teks laporan berhasil disalin!');
-    } catch {
-      setShowPreviewModal(true);
-    }
+    copyTextGuaranteed(msg);
+    showToast('Teks laporan berhasil disalin!');
   };
 
   return (
@@ -1223,42 +1234,9 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="flex gap-2 mb-3">
-                <button
-                  type="button"
-                  onClick={() => setSelectedDate(toDateInputValue(new Date()))}
-                  className={`flex-1 h-9 rounded-xl text-xs font-extrabold border transition-colors cursor-pointer ${
-                    selectedDate === toDateInputValue(new Date())
-                      ? 'bg-emerald-600 border-emerald-600 text-white'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  Hari Ini
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const yest = new Date();
-                    yest.setDate(yest.getDate() - 1);
-                    setSelectedDate(toDateInputValue(yest));
-                  }}
-                  className={`flex-1 h-9 rounded-xl text-xs font-extrabold border transition-colors cursor-pointer ${
-                    (() => {
-                      const yest = new Date();
-                      yest.setDate(yest.getDate() - 1);
-                      return selectedDate === toDateInputValue(yest);
-                    })()
-                      ? 'bg-emerald-600 border-emerald-600 text-white'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  Kemarin
-                </button>
-              </div>
-
               <div className="mb-3">
-                <label className="block text-xs font-bold text-slate-600 mb-1">
-                  Atau Pilih Tanggal Kalender:
+                <label className="block text-xs font-bold text-slate-600 mb-1.5">
+                  Pilih Tanggal:
                 </label>
                 <input
                   type="date"
@@ -1274,6 +1252,9 @@ export default function App() {
                 </div>
                 <div className="text-xs font-extrabold text-slate-800 mt-0.5">
                   *Sisa Fisik* – {formatDateId(selectedDate)}
+                </div>
+                <div className="text-[11px] font-semibold text-emerald-700 mt-1.5">
+                  Teks laporan otomatis disalin & langsung membuka Grup WhatsApp.
                 </div>
               </div>
 
